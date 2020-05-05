@@ -39,7 +39,7 @@ For handling low level MIDI data you may look into:
 extern crate core_foundation;
 extern crate coremidi_sys;
 
-use coremidi_sys::OSStatus;
+pub use coremidi_sys::OSStatus;
 
 use coremidi_sys::{
     MIDIObjectRef, MIDIFlushOutput, MIDIRestart, MIDIPacket, MIDIPacketList
