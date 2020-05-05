@@ -5,12 +5,15 @@ use crossterm::event::{read, Event};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 
 fn main() {
-    println!("Logging Client Notifications");
-    println!("");
-    println!("Press any key to exit.");
-    println!("");
+    println!("Logging Client Notifications - Press any key to exit.");
+
+    let _client = coremidi::Client::new_with_notifications("example-client", print_notification).unwrap();
 
     loop_until_keys_pressed();
+}
+
+fn print_notification(notification: &coremidi::Notification) {
+    println!("Received Notification: {:?} \r", notification);
 }
 
 fn loop_until_keys_pressed() {
