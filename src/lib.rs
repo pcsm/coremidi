@@ -71,7 +71,7 @@ pub struct Client {
 
 // A lifetime-managed wrapper for callback functions
 #[derive(Debug, PartialEq)]
-struct BoxedCallback<T>(*mut Box<FnMut(&T)>);
+struct BoxedCallback<T>(*mut Box<dyn FnMut(&T)>);
 
 impl<T> BoxedCallback<T> {
     fn new<F: FnMut(&T) + Send + 'static>(f: F) -> BoxedCallback<T> {
@@ -88,7 +88,7 @@ impl<T> BoxedCallback<T> {
 
     // must not be null
     unsafe fn call_from_raw_ptr(raw_ptr: *mut ::std::os::raw::c_void, arg: &T) {
-        let callback = &mut *(raw_ptr as *mut Box<FnMut(&T)>);
+        let callback = &mut *(raw_ptr as *mut Box<dyn FnMut(&T)>);
         callback(arg);
     }
 }
