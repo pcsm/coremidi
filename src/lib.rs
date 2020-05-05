@@ -36,11 +36,10 @@ For handling low level MIDI data you may look into:
 
 */
 
-extern crate core_foundation_sys;
 extern crate core_foundation;
 extern crate coremidi_sys;
 
-use core_foundation_sys::base::OSStatus;
+pub use coremidi_sys::OSStatus;
 
 use coremidi_sys::{
     MIDIObjectRef, MIDIFlushOutput, MIDIRestart, MIDIPacket, MIDIPacketList
