@@ -310,7 +310,7 @@ impl DerefMut for PacketBufferStorage {
 
 /// A mutable `PacketList` builder.
 ///
-/// A `PacketList` is an inmmutable reference to a [MIDIPacketList](https://developer.apple.com/reference/coremidi/midipacketlist) structure,
+/// A `PacketList` is an immutable reference to a [MIDIPacketList](https://developer.apple.com/reference/coremidi/midipacketlist) structure,
 /// while a `PacketBuffer` is a mutable structure that allows to build a `PacketList` by adding packets.
 /// It dereferences to a `PacketList`, so it can be used whenever a `PacketList` is needed.
 ///
@@ -428,7 +428,7 @@ impl PacketBuffer {
         self.last_packet_offset = PACKET_LIST_HEADER_SIZE;
     }
 
-    /// Checks whether the given tiemstamped data can be merged into the previous packet
+    /// Checks whether the given timestamped data can be merged into the previous packet
     fn can_merge_into_last_packet(&self, time: MIDITimeStamp, data: &[u8]) -> (bool, usize) {
         if self.packet_list_is_empty() {
             (false, 0)
