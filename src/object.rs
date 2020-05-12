@@ -1,7 +1,5 @@
 #![allow(non_upper_case_globals)]
 
-use core_foundation_sys::base::OSStatus;
-
 use coremidi_sys::{
     SInt32,
     kMIDIObjectType_Other,
@@ -16,6 +14,8 @@ use coremidi_sys::{
 };
 
 use std::fmt;
+
+use crate::OSStatus;
 
 use Object;
 use properties::{

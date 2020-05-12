@@ -1,8 +1,8 @@
-use core_foundation_sys::base::OSStatus;
-
 use coremidi_sys::MIDIFlushOutput;
 
 use std::ops::Deref;
+
+use crate::OSStatus;
 
 use Object;
 use Endpoint;

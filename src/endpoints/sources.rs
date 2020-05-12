@@ -1,10 +1,10 @@
-use core_foundation_sys::base::OSStatus;
-
 use coremidi_sys::{
     MIDIGetNumberOfSources, MIDIGetSource, MIDIReceived, MIDIEndpointDispose, ItemCount
 };
 
 use std::ops::Deref;
+
+use crate::OSStatus;
 
 use Object;
 use Endpoint;
