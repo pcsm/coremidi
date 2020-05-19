@@ -14,9 +14,7 @@ use core_foundation::{
 
 use coremidi_sys::*;
 
-use std::{
-    mem::MaybeUninit,
-};
+use std::mem::MaybeUninit;
 
 use {
     Object,
@@ -218,7 +216,50 @@ pub enum StringPropertyNew {
     DriverDeviceEditorApp,
     /// See [kMIDIPropertyDisplayName](https://developer.apple.com/reference/coremidi/kMIDIPropertyDisplayName)
     DisplayName,
-    Custom(String),
+}
+
+macro_rules! match_property_keys {
+    ($match_var:ident, $($prop_name:ident -> $key_name: ident,)*) => {
+        Ok(match $match_var {
+            $(x if x == unsafe { $key_name } => $prop_name,)*
+            _ => return {
+                Err(())
+            }
+        })
+    }
+}
+
+impl StringPropertyNew {
+    /// Note: Should only be used internally with predefined CoreMidi constants,
+    /// since it compares pointers of the incoming CFStringRef and the constants
+    fn from_constant_string_ref(key: CFStringRef) -> Result<Self, ()> {
+        use StringPropertyNew::*;
+        match_property_keys! {
+            key, 
+            Name -> kMIDIPropertyName,
+            Manufacturer -> kMIDIPropertyManufacturer,
+            Model -> kMIDIPropertyModel,
+            DriverOwner -> kMIDIPropertyDriverOwner,
+            DriverDeviceEditorApp -> kMIDIPropertyDriverDeviceEditorApp,
+            DisplayName -> kMIDIPropertyDisplayName,
+        }
+    }
+}
+
+impl From<StringPropertyNew> for CFStringRef {
+    fn from(prop: StringPropertyNew) -> Self {
+        use StringPropertyNew::*;
+        unsafe {
+            match prop {
+                Name => kMIDIPropertyName,
+                Manufacturer => kMIDIPropertyManufacturer,
+                Model => kMIDIPropertyModel,
+                DriverOwner => kMIDIPropertyDriverOwner,
+                DriverDeviceEditorApp => kMIDIPropertyDriverDeviceEditorApp,
+                DisplayName => kMIDIPropertyDisplayName,
+            }
+        }
+    }
 }
 
 /// A MIDI object property whose value is an Integer
@@ -247,7 +288,6 @@ pub enum IntegerPropertyNew {
     MaxRecieveChannels,
     /// See [kMIDIPropertyMaxTransmitChannels](https://developer.apple.com/reference/coremidi/kMIDIPropertyMaxTransmitChannels)
     MaxTransmitChannels,
-    Custom(String),
 }
 
 /// A MIDI object property whose value is a Boolean
@@ -302,7 +342,6 @@ pub enum BooleanPropertyNew {
     IsMixer,
     /// See [kMIDIPropertyIsEffectUnit](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEffectUnit)
     IsEffectUnit,
-    Custom(String),
 }
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
@@ -310,6 +349,7 @@ pub enum Property {
     Boolean(BooleanPropertyNew),
     Integer(IntegerPropertyNew),
     String(StringPropertyNew),
+    Custom(String),
 }
 
 // pub struct PropertyStorage<T> {
