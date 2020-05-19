@@ -43,6 +43,16 @@ enum PropertyKeyStorage {
 }
 
 impl PropertyKeyStorage {
+    pub fn new<T: AsRef<str>>(name: T) -> Self {
+        PropertyKeyStorage::Owned(CFString::new(name.as_ref()))
+    }
+
+    /// Note: Should only be used internally with predefined CoreMidi constants,
+    /// since it does not bump the retain count of the CFStringRef.
+    fn from_constant_string_ref(string_ref: CFStringRef) -> Self {
+        PropertyKeyStorage::Constant(string_ref)
+    }
+
     /// Return a raw CFStringRef pointing to this property key
     fn as_string_ref(&self) -> CFStringRef {
         match self {
@@ -67,8 +77,8 @@ impl PropertyKeyStorage {
 pub struct StringProperty(PropertyKeyStorage);
 
 impl StringProperty {
-    pub fn new(name: &str) -> Self {
-        StringProperty(PropertyKeyStorage::Owned(CFString::new(name)))
+    pub fn new<T: AsRef<str>>(name: T) -> Self {
+        StringProperty(PropertyKeyStorage::new(name))
     }
 
     /// Note: Should only be used internally with predefined CoreMidi constants,
@@ -113,8 +123,8 @@ impl<'a, T> PropertySetter<T> for StringProperty where T: Into<String> {
 pub struct IntegerProperty(PropertyKeyStorage);
 
 impl IntegerProperty {
-    pub fn new(name: &str) -> Self {
-        IntegerProperty(PropertyKeyStorage::Owned(CFString::new(name)))
+    pub fn new<T: AsRef<str>>(name: T) -> Self {
+        IntegerProperty(PropertyKeyStorage::new(name))
     }
 
     /// Note: Should only be used internally with predefined CoreMidi constants,
@@ -154,7 +164,7 @@ impl <T> PropertySetter<T> for IntegerProperty where T: Into<SInt32> {
 pub struct BooleanProperty(IntegerProperty);
 
 impl BooleanProperty {
-    pub fn new(name: &str) -> Self {
+    pub fn new<T: AsRef<str>>(name: T) -> Self {
         BooleanProperty(IntegerProperty::new(name))
     }
 
