@@ -15,7 +15,6 @@ use core_foundation::{
 use coremidi_sys::*;
 
 use std::{
-    fmt::Debug,
     mem::MaybeUninit,
 };
 
@@ -187,6 +186,143 @@ impl<T> PropertySetter<T> for BooleanProperty where T: Into<bool> {
         self.0.set_value(object, value)
     }
 }
+
+pub trait PropertyKind {
+    type T;
+}
+
+impl PropertyKind for StringProperty {
+    type T = String;
+}
+
+impl PropertyKind for IntegerProperty {
+    type T = i32;
+}
+
+impl PropertyKind for BooleanProperty {
+    type T = bool;
+}
+/// A MIDI object property whose value is a String
+///
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+pub enum StringPropertyNew {
+    /// See [kMIDIPropertyName](https://developer.apple.com/reference/coremidi/kmidipropertyname)
+    Name,
+    /// See [kMIDIPropertyManufacturer](https://developer.apple.com/reference/coremidi/kmidipropertymanufacturer)
+    Manufacturer,
+    /// See [kMIDIPropertyModel](https://developer.apple.com/reference/coremidi/kmidipropertymodel)
+    Model,
+    /// See [kMIDIPropertyDriverOwner](https://developer.apple.com/reference/coremidi/kMIDIPropertyDriverOwner)
+    DriverOwner,
+    /// See [kMIDIPropertyDriverDeviceEditorApp](https://developer.apple.com/reference/coremidi/kMIDIPropertyDriverDeviceEditorApp)
+    DriverDeviceEditorApp,
+    /// See [kMIDIPropertyDisplayName](https://developer.apple.com/reference/coremidi/kMIDIPropertyDisplayName)
+    DisplayName,
+    Custom(String),
+}
+
+/// A MIDI object property whose value is an Integer
+///
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+pub enum IntegerPropertyNew {
+    /// See [kMIDIPropertyDeviceID](https://developer.apple.com/reference/coremidi/kmidipropertydeviceid)
+    DeviceId,
+    /// See [kMIDIPropertyUniqueID](https://developer.apple.com/reference/coremidi/kmidipropertyuniqueid)
+    UniqueId,
+    /// See [kMIDIPropertyReceiveChannels](https://developer.apple.com/reference/coremidi/kmidipropertyreceivechannels)
+    ReceiveChannels,
+    /// See [kMIDIPropertyTransmitChannels](https://developer.apple.com/reference/coremidi/kmidipropertytransmitchannels)
+    TransmitChannels,
+    /// See [kMIDIPropertyMaxSysExSpeed](https://developer.apple.com/reference/coremidi/kmidipropertymaxsysexspeed)
+    MaxSysexSpeed,
+    /// See [kMIDIPropertyAdvanceScheduleTimeMuSec](https://developer.apple.com/reference/coremidi/kMIDIPropertyAdvanceScheduleTimeMuSec)
+    AdvanceScheduleTimeMuSec,
+    /// See [kMIDIPropertySingleRealtimeEntity](https://developer.apple.com/reference/coremidi/kMIDIPropertySingleRealtimeEntity)
+    SingleRealtimeEntity,
+    /// See [kMIDIPropertyConnectionUniqueID](https://developer.apple.com/reference/coremidi/kMIDIPropertyConnectionUniqueID)
+    ConnectionUniqueId,
+    /// See [kMIDIPropertyDriverVersion](https://developer.apple.com/reference/coremidi/kMIDIPropertyDriverVersion)
+    DriverVersion,
+    /// See [kMIDIPropertyMaxReceiveChannels](https://developer.apple.com/reference/coremidi/kMIDIPropertyMaxReceiveChannels)
+    MaxRecieveChannels,
+    /// See [kMIDIPropertyMaxTransmitChannels](https://developer.apple.com/reference/coremidi/kMIDIPropertyMaxTransmitChannels)
+    MaxTransmitChannels,
+    Custom(String),
+}
+
+/// A MIDI object property whose value is a Boolean
+///
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+pub enum BooleanPropertyNew {
+    /// See [kMIDIPropertyIsEmbeddedEntity](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEmbeddedEntity)
+    IsEmbeddedEntity,
+    /// See [kMIDIPropertyIsBroadcast](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsBroadcast)
+    IsBroadcast,
+    /// See [kMIDIPropertyOffline](https://developer.apple.com/reference/coremidi/kMIDIPropertyOffline)
+    Offline,
+    /// See [kMIDIPropertyPrivate](https://developer.apple.com/reference/coremidi/kMIDIPropertyPrivate)
+    Private,
+    /// See [kMIDIPropertySupportsGeneralMIDI](https://developer.apple.com/reference/coremidi/kMIDIPropertySupportsGeneralMIDI)
+    SupportsGeneralMIDI,
+    /// See [kMIDIPropertySupportsMMC](https://developer.apple.com/reference/coremidi/kMIDIPropertySupportsMMC)
+    SupportsMMC,
+    /// See [kMIDIPropertyCanRoute](https://developer.apple.com/reference/coremidi/kMIDIPropertyCanRoute)
+    CanRoute,
+    /// See [kMIDIPropertyReceivesClock](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesClock)
+    ReceivesClock,
+    /// See [kMIDIPropertyReceivesMTC](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesMTC)
+    ReceivesMTC,
+    /// See [kMIDIPropertyReceivesNotes](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesNotes)
+    ReceivesNotes,
+    /// See [kMIDIPropertyReceivesProgramChanges](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesProgramChanges)
+    ReceivesProgramChanges,
+    /// See [kMIDIPropertyReceivesBankSelectMSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesBankSelectMSB)
+    ReceivesBankSelectMSB,
+    /// See [kMIDIPropertyReceivesBankSelectLSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesBankSelectLSB)
+    ReceivesBankSelectLSB,
+    /// See [kMIDIPropertyTransmitsBankSelectMSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsBankSelectMSB)
+    TransmitsBankSelectMSB,
+    /// See [kMIDIPropertyTransmitsBankSelectLSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsBankSelectLSB)
+    TransmitsBankSelectLSB,
+    /// See [kMIDIPropertyTransmitsClock](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsClock)
+    TransmitsClock,
+    /// See [kMIDIPropertyTransmitsMTC](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsMTC)
+    TransmitsMTC,
+    /// See [kMIDIPropertyTransmitsNotes](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsNotes)
+    TransmitsNotes,
+    /// See [kMIDIPropertyTransmitsProgramChanges](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsProgramChanges)
+    TransmitsProgramChanges,
+    /// See [kMIDIPropertyPanDisruptsStereo](https://developer.apple.com/reference/coremidi/kMIDIPropertyPanDisruptsStereo)
+    PanDisruptsStereo,
+    /// See [kMIDIPropertyIsSampler](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsSampler)
+    IsSampler,
+    /// See [kMIDIPropertyIsDrumMachine](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsDrumMachine)
+    IsDrumMachine,
+    /// See [kMIDIPropertyIsMixer](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsMixer)
+    IsMixer,
+    /// See [kMIDIPropertyIsEffectUnit](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEffectUnit)
+    IsEffectUnit,
+    Custom(String),
+}
+
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+pub enum Property {
+    Boolean(BooleanPropertyNew),
+    Integer(IntegerPropertyNew),
+    String(StringPropertyNew),
+}
+
+// pub struct PropertyStorage<T> {
+//     key: PropertyKeyStorage,
+//     kind: PhantomData<T>,
+// }
+
+// #[derive(Clone, Debug)]
+// pub enum Property {
+//     Boolean(PropertyStorage<bool>),
+//     Integer(PropertyStorage<i32>),
+//     String(PropertyStorage<String>),
+// }
 
 /// The set of properties that might be available for MIDI objects.
 ///
