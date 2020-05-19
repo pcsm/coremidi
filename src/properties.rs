@@ -14,7 +14,10 @@ use core_foundation::{
 
 use coremidi_sys::*;
 
-use std::mem::MaybeUninit;
+use std::{
+    fmt::Debug,
+    mem::MaybeUninit,
+};
 
 use {
     Object,
@@ -33,6 +36,7 @@ pub trait PropertySetter<T> {
 /// Because Property structs can be constructed from strings that have been
 /// passed in from the user or are constants CFStringRefs from CoreMidi, we 
 /// need to abstract over how we store their keys.
+#[derive(Clone, Debug)]
 enum PropertyKeyStorage {
     Owned(CFString),
     Constant(CFStringRef)
@@ -59,6 +63,7 @@ impl PropertyKeyStorage {
 
 /// A MIDI object property which value is an String
 ///
+#[derive(Clone, Debug)]
 pub struct StringProperty(PropertyKeyStorage);
 
 impl StringProperty {
@@ -104,6 +109,7 @@ impl<'a, T> PropertySetter<T> for StringProperty where T: Into<String> {
 
 /// A MIDI object property which value is an Integer
 ///
+#[derive(Clone, Debug)]
 pub struct IntegerProperty(PropertyKeyStorage);
 
 impl IntegerProperty {
@@ -144,6 +150,7 @@ impl <T> PropertySetter<T> for IntegerProperty where T: Into<SInt32> {
 
 /// A MIDI object property which value is a Boolean
 ///
+#[derive(Clone, Debug)]
 pub struct BooleanProperty(IntegerProperty);
 
 impl BooleanProperty {
