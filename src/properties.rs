@@ -111,63 +111,72 @@ impl<V> CustomProperty<V> where
     }
 }
 
-/// Can represent any kind of MIDI object property
-pub enum Property {
+/// Can hold the name of any MIDI object property
+pub enum PropertyName {
     String(StringProperty),
     Integer(IntegerPropertyNew),
     Boolean(BooleanPropertyNew),
     Custom(String),
 }
 
+/// The name of a MIDI object property that is accessed as a `String`
+pub type StringPropertyName = TypedPropertyName<StringProperty>;
+
+/// The name of a MIDI object property that is accessed as a `i32`
+pub type IntegerPropertyName = TypedPropertyName<IntegerProperty>;
+
+/// The name of a MIDI object property that is accessed as a `bool`
+pub type BooleanPropertyName = TypedPropertyName<BooleanProperty>;
+
 /// The name of a MIDI object property, which can either be one of the standard 
 /// CoreMIDI constant property names or a custom property name.
 #[derive(Clone, Debug)]
-pub enum TypedProperty<K> where
+pub enum TypedPropertyName<K> where
     K: StandardProperty,
 {
     Standard(K),
     Custom(CFString),
 }
 
-impl<K> TypedProperty<K> where
+impl<K> TypedPropertyName<K> where
     K: StandardProperty,
 {
-    pub(crate) fn custom<S: AsRef<str>>(name: S) -> Self {
-        TypedProperty::Custom(CFString::new(name.as_ref()))
+    fn custom<S: AsRef<str>>(name: S) -> Self {
+        TypedPropertyName::Custom(CFString::new(name.as_ref()))
     }
 
     /// Return a raw CFStringRef pointing to this property key
     ///
-    /// Note: Should only be used internally
-    pub(crate) fn as_string_ref(&self) -> CFStringRef {
+    /// Note: Should never be exposed externally
+    fn as_string_ref(&self) -> CFStringRef {
         match self {
-            TypedProperty::Standard(constant) => Into::into(constant.clone()),
-            TypedProperty::Custom(custom) => custom.as_concrete_TypeRef(),
+            TypedPropertyName::Standard(constant) => Into::into(constant.clone()),
+            TypedPropertyName::Custom(custom) => custom.as_concrete_TypeRef(),
         }
     }
 }
 
-impl<K> From<K> for TypedProperty<K> where
+impl<K> From<K> for TypedPropertyName<K> where
     K: StandardProperty,
 {
     fn from(prop: K) -> Self {
-        TypedProperty::Standard(prop)
+        TypedPropertyName::Standard(prop)
     }
 }
 
-impl<K> From<String> for TypedProperty<K> where
+impl<K> From<String> for TypedPropertyName<K> where
     K: StandardProperty,
 {
     fn from(s: String) -> Self {
-        TypedProperty::custom(s)
+        TypedPropertyName::custom(s)
     }
 }
 
-impl<K> From<&str> for TypedProperty<K> where
+impl<K> From<&str> for TypedPropertyName<K> where
     K: StandardProperty,
 {
     fn from(s: &str) -> Self {
-        TypedProperty::custom(s)
+        TypedPropertyName::custom(s)
     }
 }
 
@@ -234,15 +243,13 @@ impl From<StringProperty> for CFStringRef {
 
 impl PropertyGetter<String> for StringProperty {
     fn value_from(&self, object: &Object) -> Result<String, OSStatus> {
-        let name: CFStringRef = Into::into(*self);
-        get_string_property_inner(object, name).into()
+        get_string_property_inner(object, *self).into()
     }
 }
 
 impl<T> PropertySetter<T> for StringProperty where T: AsRef<str> {
     fn set_value(&self, object: &Object, value: T) -> Result<(), OSStatus> {
-        let name: CFStringRef = Into::into(*self);
-        set_string_property_inner(object, name, value)
+        set_string_property_inner(object, *self, value)
     }
 }
 
@@ -411,10 +418,13 @@ pub enum BooleanPropertyNew {
     IsEffectUnit,
 }
 
-pub fn get_string_property_inner(object: &Object, name: CFStringRef) -> Result<String, OSStatus> {
+pub fn get_string_property_inner<N>(object: &Object, name: N) -> Result<String, OSStatus> where
+    N: Into<StringPropertyName>,
+{
+    let name = name.into();
     let mut string_ref = MaybeUninit::uninit();
     let status = unsafe {
-        MIDIObjectGetStringProperty(object.0, name, string_ref.as_mut_ptr())
+        MIDIObjectGetStringProperty(object.0, name.as_string_ref(), string_ref.as_mut_ptr())
     };
     result_from_status(status, || {
         let string_ref = unsafe { string_ref.assume_init() };
@@ -424,13 +434,15 @@ pub fn get_string_property_inner(object: &Object, name: CFStringRef) -> Result<S
     })
 }
 
-pub fn set_string_property_inner<T>(object: &Object, name: CFStringRef, value: T) -> Result<(), OSStatus> where
-    T: AsRef<str>
+pub fn set_string_property_inner<N, V>(object: &Object, name: N, value: V) -> Result<(), OSStatus> where
+    N: Into<StringPropertyName>,
+    V: AsRef<str>,
 {
+    let name = name.into();
     let string = CFString::new(value.as_ref());
     let string_ref = string.as_concrete_TypeRef();
     let status = unsafe {
-        MIDIObjectSetStringProperty(object.0, name, string_ref)
+        MIDIObjectSetStringProperty(object.0, name.as_string_ref(), string_ref)
     };
     unit_result_from_status(status)
 }

@@ -23,14 +23,14 @@ use std::fmt;
 
 use Object;
 use properties::{
-    Property,
+    PropertyName,
     PropertyGetter,
     PropertySetter,
     Properties,
-    TypedProperty,
+    TypedPropertyName,
     IntegerProperty,
     BooleanProperty,
-    StringProperty,
+    StringPropertyName,
     get_string_property_inner,
     set_string_property_inner,
 };
@@ -87,20 +87,18 @@ impl Object {
     /// Sets an object's string-type property.
     ///
     pub fn set_property_string<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
-        N: Into<TypedProperty<StringProperty>>, 
+        N: Into<StringPropertyName>, 
         V: AsRef<str>,
     {
-        let prop = name.into();
-        set_string_property_inner(self, prop.as_string_ref(), value)
+        set_string_property_inner(self, name, value)
     }
 
     /// Gets an object's string-type property.
     ///
     pub fn get_property_string<N>(&self, name: N) -> Result<String, OSStatus> where
-        N: AsRef<str>
+        N: Into<StringPropertyName>, 
     {
-        let name = CFString::new(name.as_ref());
-        get_string_property_inner(self, name.as_concrete_TypeRef())
+        get_string_property_inner(self, name)
     }
 
     /// Sets an object's integer-type property.
