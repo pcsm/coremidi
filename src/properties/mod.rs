@@ -26,16 +26,18 @@ pub use self::{
     constants::*,
     boolean::BooleanProperty,
     integer::IntegerProperty,
+    string::StringProperty,
+};
+
+pub(crate) use self::{
+    integer::{
+        get_integer_property_inner,
+        set_integer_property_inner,
+    },
     string::{
-        StringProperty,
         get_string_property_inner,
         set_string_property_inner,
     },
-};
-
-pub(crate) use self::integer::{
-    get_integer_property_inner_concrete,
-    set_integer_property_inner_concrete,
 };
 
 /// A type that can be returned from a Property

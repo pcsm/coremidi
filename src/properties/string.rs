@@ -18,8 +18,6 @@ use {
     unit_result_from_status,
 };
 
-use super::StringPropertyName;
-
 /// A valid MIDI object property whose value is a String
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum StringProperty {
@@ -70,13 +68,10 @@ impl From<StringProperty> for CFStringRef {
     }
 }
 
-pub fn get_string_property_inner<N>(object: &Object, name: N) -> Result<String, OSStatus> where
-    N: Into<StringPropertyName>,
-{
-    let name = name.into();
+pub(crate) fn get_string_property_inner(object: &Object, name: CFStringRef) -> Result<String, OSStatus> {
     let mut string_ref = MaybeUninit::uninit();
     let status = unsafe {
-        MIDIObjectGetStringProperty(object.0, name.as_string_ref(), string_ref.as_mut_ptr())
+        MIDIObjectGetStringProperty(object.0, name, string_ref.as_mut_ptr())
     };
     result_from_status(status, || {
         let string_ref = unsafe { string_ref.assume_init() };
@@ -86,15 +81,13 @@ pub fn get_string_property_inner<N>(object: &Object, name: N) -> Result<String, 
     })
 }
 
-pub fn set_string_property_inner<N, V>(object: &Object, name: N, value: V) -> Result<(), OSStatus> where
-    N: Into<StringPropertyName>,
+pub(crate) fn set_string_property_inner<V>(object: &Object, name: CFStringRef, value: V) -> Result<(), OSStatus> where
     V: AsRef<str>,
 {
-    let name = name.into();
     let string = CFString::new(value.as_ref());
     let string_ref = string.as_concrete_TypeRef();
     let status = unsafe {
-        MIDIObjectSetStringProperty(object.0, name.as_string_ref(), string_ref)
+        MIDIObjectSetStringProperty(object.0, name, string_ref)
     };
     unit_result_from_status(status)
 }

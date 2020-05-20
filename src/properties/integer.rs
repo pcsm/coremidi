@@ -87,7 +87,7 @@ impl From<IntegerProperty> for CFStringRef {
     }
 }
 
-pub(crate) fn get_integer_property_inner_concrete(object: &Object, name: CFStringRef) -> Result<i32, OSStatus> {
+pub(crate) fn get_integer_property_inner(object: &Object, name: CFStringRef) -> Result<i32, OSStatus> {
     let mut value = MaybeUninit::uninit();
     let status = unsafe {
         MIDIObjectGetIntegerProperty(object.0, name, value.as_mut_ptr())
@@ -98,7 +98,7 @@ pub(crate) fn get_integer_property_inner_concrete(object: &Object, name: CFStrin
     })
 }
 
-pub(crate) fn set_integer_property_inner_concrete(object: &Object, name: CFStringRef, value: i32) -> Result<(), OSStatus> {
+pub(crate) fn set_integer_property_inner(object: &Object, name: CFStringRef, value: i32) -> Result<(), OSStatus> {
     let status = unsafe {
         MIDIObjectSetIntegerProperty(object.0, name, value)
     };
