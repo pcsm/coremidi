@@ -40,28 +40,14 @@ pub(crate) use self::{
     },
 };
 
-/// A type that can be returned from a Property
-pub trait PropertyValue { }
-impl PropertyValue for String { }
-impl PropertyValue for i32 { }
-impl PropertyValue for bool { }
-
 /// A type that can represent a standard CoreMIDI property
-pub trait StandardProperty : Into<CFStringRef> + Copy + Clone {
-    type Value: PropertyValue;
-}
+pub trait StandardProperty : Into<CFStringRef> + Copy + Clone { }
 
-impl StandardProperty for StringProperty {
-    type Value = String;
-}
+impl StandardProperty for StringProperty { }
 
-impl StandardProperty for IntegerProperty {
-    type Value = i32;
-}
+impl StandardProperty for IntegerProperty { }
 
-impl StandardProperty for BooleanProperty {
-    type Value = bool;
-}
+impl StandardProperty for BooleanProperty { }
 
 /// Can hold the name of any MIDI object property
 pub enum PropertyName {
