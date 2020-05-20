@@ -1,3 +1,5 @@
+//! MIDI Object properties that can access `String` values
+
 use core_foundation::{
     string::{
         CFString, 
@@ -18,7 +20,12 @@ use {
     unit_result_from_status,
 };
 
-/// A valid MIDI object property whose value is a String
+use super::{
+    TypedPropertyName,
+    StandardProperty,
+};
+
+/// CoreMIDI-defined constant property names that can be used to access `String` values
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum StringProperty {
     /// See [kMIDIPropertyName](https://developer.apple.com/reference/coremidi/kmidipropertyname)
@@ -34,6 +41,11 @@ pub enum StringProperty {
     /// See [kMIDIPropertyDisplayName](https://developer.apple.com/reference/coremidi/kMIDIPropertyDisplayName)
     DisplayName,
 }
+
+/// The name of a MIDI object property that is accessed as a `String`
+pub type StringPropertyName = TypedPropertyName<StringProperty>;
+
+impl StandardProperty for StringProperty { }
 
 impl StringProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,

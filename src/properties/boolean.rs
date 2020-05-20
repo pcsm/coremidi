@@ -1,8 +1,14 @@
+//! MIDI Object properties that can access `bool` values
+
 use core_foundation::string::CFStringRef;
 use coremidi_sys::*;
 
-/// A MIDI object property whose value is a Boolean
-///
+use super::{
+    TypedPropertyName,
+    StandardProperty,
+};
+
+/// CoreMIDI-defined constant property names that can be used to access `bool` values
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum BooleanProperty {
     /// See [kMIDIPropertyIsEmbeddedEntity](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEmbeddedEntity)
@@ -56,6 +62,11 @@ pub enum BooleanProperty {
     /// See [kMIDIPropertySupportsShowControl](https://developer.apple.com/reference/coremidi/kMIDIPropertySupportsShowControl)
     SupportsShowControl,
 }
+
+/// The name of a MIDI object property that is accessed as a `bool`
+pub type BooleanPropertyName = TypedPropertyName<BooleanProperty>;
+
+impl StandardProperty for BooleanProperty { }
 
 impl BooleanProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,

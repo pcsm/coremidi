@@ -1,3 +1,5 @@
+//! MIDI Object properties that can access `i32` values
+
 use core_foundation::{
     string::CFStringRef,
     base::OSStatus,
@@ -12,8 +14,12 @@ use {
     unit_result_from_status,
 };
 
-/// A MIDI object property whose value is an Integer
-///
+use super::{
+    TypedPropertyName,
+    StandardProperty,
+};
+
+/// CoreMIDI-defined constant property names that can be used to access `i32` values
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum IntegerProperty {
     /// See [kMIDIPropertyDeviceID](https://developer.apple.com/reference/coremidi/kmidipropertydeviceid)
@@ -39,6 +45,11 @@ pub enum IntegerProperty {
     /// See [kMIDIPropertyMaxTransmitChannels](https://developer.apple.com/reference/coremidi/kMIDIPropertyMaxTransmitChannels)
     MaxTransmitChannels,
 }
+
+/// The name of a MIDI object property that is accessed as a `i32`
+pub type IntegerPropertyName = TypedPropertyName<IntegerProperty>;
+
+impl StandardProperty for IntegerProperty { }
 
 impl IntegerProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,

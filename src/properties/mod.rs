@@ -24,9 +24,18 @@ pub mod string;
 
 pub use self::{
     constants::*,
-    boolean::BooleanProperty,
-    integer::IntegerProperty,
-    string::StringProperty,
+    boolean::{
+        BooleanProperty,
+        BooleanPropertyName,
+    },
+    integer::{
+        IntegerProperty,
+        IntegerPropertyName,
+    },
+    string::{
+        StringProperty,
+        StringPropertyName,
+    },
 };
 
 pub(crate) use self::{
@@ -40,15 +49,6 @@ pub(crate) use self::{
     },
 };
 
-/// A type that can represent a standard CoreMIDI property
-pub trait StandardProperty : Into<CFStringRef> + Copy + Clone { }
-
-impl StandardProperty for StringProperty { }
-
-impl StandardProperty for IntegerProperty { }
-
-impl StandardProperty for BooleanProperty { }
-
 /// Can hold the name of any MIDI object property
 pub enum PropertyName {
     String(StringProperty),
@@ -57,17 +57,19 @@ pub enum PropertyName {
     Custom(String),
 }
 
-/// The name of a MIDI object property that is accessed as a `String`
-pub type StringPropertyName = TypedPropertyName<StringProperty>;
+/// Types that implement this can represent a set of standard CoreMIDI property
+/// name constants
+pub trait StandardProperty : Into<CFStringRef> + Copy + Clone { }
 
-/// The name of a MIDI object property that is accessed as a `i32`
-pub type IntegerPropertyName = TypedPropertyName<IntegerProperty>;
-
-/// The name of a MIDI object property that is accessed as a `bool`
-pub type BooleanPropertyName = TypedPropertyName<BooleanProperty>;
-
-/// The name of a MIDI object property, which can either be one of the standard 
-/// CoreMIDI constant property names or a custom property name.
+/// The name of a MIDI object property, with info about the type of data this
+/// property can be used to access.
+///
+/// Can either be one of the CoreMIDI-defined property name constants or a
+/// custom property name.
+///
+/// You should typically not create this directly, since it can be created from
+/// any `&str`, `String`, or `StandardProperty` using `std::convert::From` or
+/// `std::convert::Into`.
 #[derive(Clone, Debug)]
 pub enum TypedPropertyName<K> where
     K: StandardProperty,
