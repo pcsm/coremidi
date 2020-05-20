@@ -24,11 +24,7 @@ pub mod string;
 
 pub use self::{
     constants::*,
-    boolean::{
-        BooleanProperty,
-        get_boolean_property_inner,
-        set_boolean_property_inner,
-    },
+    boolean::BooleanProperty,
     integer::{
         IntegerProperty,
         get_integer_property_inner,
@@ -106,7 +102,7 @@ impl<K> TypedPropertyName<K> where
     /// Return a raw CFStringRef pointing to this property key
     ///
     /// Note: Should never be exposed externally
-    fn as_string_ref(&self) -> CFStringRef {
+    pub(crate) fn as_string_ref(&self) -> CFStringRef {
         match self {
             TypedPropertyName::Standard(constant) => Into::into(constant.clone()),
             TypedPropertyName::Custom(custom) => custom.as_concrete_TypeRef(),

@@ -1,16 +1,7 @@
 use core_foundation::{
     string::CFStringRef,
-    base::OSStatus,
 };
 use coremidi_sys::*;
-
-use Object;
-
-use super::{
-    BooleanPropertyName,
-    get_integer_property_inner_concrete,
-    set_integer_property_inner_concrete,
-};
 
 /// A MIDI object property whose value is a Boolean
 ///
@@ -137,22 +128,6 @@ impl From<BooleanProperty> for CFStringRef {
             }
         }
     }
-}
-
-pub fn get_boolean_property_inner<N>(object: &Object, name: N) -> Result<bool, OSStatus> where
-    N: Into<BooleanPropertyName>,
-{
-    let name = name.into();
-    get_integer_property_inner_concrete(object, name.as_string_ref()).map(|val| (val == 1))
-}
-
-pub fn set_boolean_property_inner<N, V>(object: &Object, name: N, value: V) -> Result<(), OSStatus> where
-    N: Into<BooleanPropertyName>,
-    V: Into<bool>,
-{
-    let name = name.into();
-    let value = if value.into() { 1 } else { 0 };
-    set_integer_property_inner_concrete(object, name.as_string_ref(), value)
 }
 
 #[cfg(test)]

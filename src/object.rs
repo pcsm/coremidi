@@ -28,8 +28,8 @@ use properties::{
     set_string_property_inner,
     get_integer_property_inner,
     set_integer_property_inner,
-    get_boolean_property_inner,
-    set_boolean_property_inner,
+    get_integer_property_inner_concrete,
+    set_integer_property_inner_concrete,
 };
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -123,7 +123,9 @@ impl Object {
         N: Into<BooleanPropertyName>, 
         V: Into<bool>,
     {
-        set_boolean_property_inner(self, name, value)
+        let name = name.into();
+        let value = if value.into() { 1 } else { 0 };
+        set_integer_property_inner_concrete(self, name.as_string_ref(), value)
     }
 
     /// Gets an object's boolean-type property.
@@ -133,7 +135,8 @@ impl Object {
     pub fn get_property_boolean<N>(&self, name: N) -> Result<bool, OSStatus> where
         N: Into<BooleanPropertyName>, 
     {
-        get_boolean_property_inner(self, name)
+        let name = name.into();
+        get_integer_property_inner_concrete(self, name.as_string_ref()).map(|val| (val == 1))
     }
 }
 
