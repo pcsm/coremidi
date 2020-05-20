@@ -1,9 +1,5 @@
 #![allow(non_upper_case_globals)]
 
-use core_foundation::{
-    base::TCFType,
-    string::CFString,
-};
 use core_foundation_sys::base::OSStatus;
 
 use coremidi_sys::{
@@ -23,16 +19,17 @@ use std::fmt;
 
 use Object;
 use properties::{
-    PropertyName,
     PropertyGetter,
-    PropertySetter,
     Properties,
-    TypedPropertyName,
-    IntegerProperty,
-    BooleanProperty,
+    IntegerPropertyName,
+    BooleanPropertyName,
     StringPropertyName,
     get_string_property_inner,
     set_string_property_inner,
+    get_integer_property_inner,
+    set_integer_property_inner,
+    get_boolean_property_inner,
+    set_boolean_property_inner,
 };
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -103,30 +100,40 @@ impl Object {
 
     /// Sets an object's integer-type property.
     ///
-    pub fn set_property_integer(&self, name: &str, value: i32) -> Result<(), OSStatus> {
-        IntegerProperty::new(name).set_value(self, value)
+    pub fn set_property_integer<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
+        N: Into<IntegerPropertyName>, 
+        V: Into<i32>,
+    {
+        set_integer_property_inner(self, name, value)
     }
 
     /// Gets an object's integer-type property.
     ///
-    pub fn get_property_integer(&self, name: &str) -> Result<i32, OSStatus> {
-        IntegerProperty::new(name).value_from(self)
+    pub fn get_property_integer<N>(&self, name: N) -> Result<i32, OSStatus> where 
+        N: Into<IntegerPropertyName>, 
+    {
+        get_integer_property_inner(self, name)
     }
 
     /// Sets an object's boolean-type property.
     ///
     /// CoreMIDI treats booleans as integers (0/1) but this API uses native bool types
     ///
-    pub fn set_property_boolean(&self, name: &str, value: bool) -> Result<(), OSStatus> {
-        BooleanProperty::new(name).set_value(self, value)
+    pub fn set_property_boolean<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
+        N: Into<BooleanPropertyName>, 
+        V: Into<bool>,
+    {
+        set_boolean_property_inner(self, name, value)
     }
 
     /// Gets an object's boolean-type property.
     ///
     /// CoreMIDI treats booleans as integers (0/1) but this API uses native bool types
     ///
-    pub fn get_property_boolean(&self, name: &str) -> Result<bool, OSStatus> {
-        BooleanProperty::new(name).value_from(self)
+    pub fn get_property_boolean<N>(&self, name: N) -> Result<bool, OSStatus> where
+        N: Into<BooleanPropertyName>, 
+    {
+        get_boolean_property_inner(self, name)
     }
 }
 
