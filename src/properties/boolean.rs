@@ -4,8 +4,9 @@ use core_foundation::string::CFStringRef;
 use coremidi_sys::*;
 
 use super::{
-    TypedPropertyName,
+    match_property_keys,
     StandardProperty,
+    TypedPropertyName,
 };
 
 /// CoreMIDI-defined constant property names that can be used to access `bool` values
@@ -71,9 +72,9 @@ impl StandardProperty for BooleanProperty { }
 impl BooleanProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,
     /// since it compares pointers of the incoming CFStringRef and the constants
-    fn try_from_constant_string_ref(key: CFStringRef) -> Result<Self, ()> {
+    pub(crate) fn try_from_constant_string_ref(key: CFStringRef) -> Option<Self> {
         use self::BooleanProperty::*;
-        match_property_keys! {
+        convert_property_key_set! {
             key, 
             IsEmbeddedEntity -> kMIDIPropertyIsEmbeddedEntity,
             IsBroadcast -> kMIDIPropertyIsBroadcast,

@@ -1,18 +1,29 @@
 use core_foundation::{
+    base::{
+        CFEqual,
+        TCFType,
+    },
     string::{
         CFString, 
         CFStringRef,
     },
-    base::TCFType,
 };
 
-macro_rules! match_property_keys {
-    ($match_var:ident, $($prop_name:ident -> $key_name: ident,)*) => {
-        Ok(match $match_var {
-            $(x if x == unsafe { $key_name } => $prop_name,)*
-            _ => return {
-                Err(())
-            }
+use std::ffi::c_void;
+
+pub(crate) fn match_property_keys(key1: CFStringRef, key2: CFStringRef) -> bool {
+    if key1.is_null() || key2.is_null() { return false; }
+    
+    let key1 = key1 as *const c_void;
+    let key2 = key2 as *const c_void;
+    return unsafe { CFEqual(key1, key2) } == 1;
+}
+
+macro_rules! convert_property_key_set {
+    ($match_var:ident, $($prop_name:ident -> $key_name:expr,)*) => {
+        Some(match $match_var {
+            $(x if match_property_keys(x, unsafe { $key_name }) => $prop_name,)*
+            _ => return None,
         })
     }
 }
@@ -49,11 +60,48 @@ pub(crate) use self::{
 };
 
 /// Can hold the name of any MIDI object property
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum PropertyName {
     String(StringProperty),
     Integer(IntegerProperty),
     Boolean(BooleanProperty),
     Custom(String),
+}
+
+impl From<CFStringRef> for PropertyName {
+    fn from(string_ref: CFStringRef) -> Self {
+        StringProperty::try_from_constant_string_ref(string_ref).map(Into::into)
+            .or_else(|| BooleanProperty::try_from_constant_string_ref(string_ref).map(Into::into))
+            .or_else(|| IntegerProperty::try_from_constant_string_ref(string_ref).map(Into::into))
+            .unwrap_or_else(|| {
+                let name: CFString = unsafe { TCFType::wrap_under_get_rule(string_ref) };
+                name.to_string().into()
+            })
+    }
+}
+
+impl From<StringProperty> for PropertyName {
+    fn from(prop: StringProperty) -> Self {
+        PropertyName::String(prop)
+    }
+}
+
+impl From<IntegerProperty> for PropertyName {
+    fn from(prop: IntegerProperty) -> Self {
+        PropertyName::Integer(prop)
+    }
+}
+
+impl From<BooleanProperty> for PropertyName {
+    fn from(prop: BooleanProperty) -> Self {
+        PropertyName::Boolean(prop)
+    }
+}
+
+impl From<String> for PropertyName {
+    fn from(string: String) -> Self {
+        PropertyName::Custom(string)
+    }
 }
 
 /// Types that implement this can represent a set of standard CoreMIDI property

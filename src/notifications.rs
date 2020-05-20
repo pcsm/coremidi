@@ -1,8 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-use core_foundation::string::{CFString, CFStringRef};
-use core_foundation::base::{TCFType, OSStatus};
-
+use core_foundation::base::OSStatus;
 use coremidi_sys::{
     MIDINotification,
     MIDIObjectAddRemoveNotification,
@@ -17,10 +15,14 @@ use coremidi_sys::{
     kMIDIMsgIOError
 };
 
-use Object;
-use object::ObjectType;
-use Device;
+use crate::{
+    PropertyName,
+    Device,
+    Object,
+    ObjectType,
+};
 
+/// Information from a `Notfication` about a MIDI object having been added or remvoed
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct AddedRemovedInfo {
@@ -30,12 +32,13 @@ pub struct AddedRemovedInfo {
     pub child_type: ObjectType
 }
 
+/// Information from a `Notfication` about a property that has changed on a MIDI object
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct PropertyChangedInfo {
     pub object: Object,
     pub object_type: ObjectType,
-    pub property_name: String
+    pub property_name: PropertyName,
 }
 
 #[derive(Debug)]
@@ -97,11 +100,7 @@ impl Notification {
         let property_changed_notification = unsafe { &*(notification as *const _ as *const MIDIObjectPropertyChangeNotification) };
         match ObjectType::from(property_changed_notification.objectType) {
             Ok(object_type) => {
-                let property_name = {
-                    let name_ref: CFStringRef = property_changed_notification.propertyName;
-                    let name: CFString = unsafe { TCFType::wrap_under_get_rule(name_ref) };
-                    name.to_string()
-                };
+                let property_name = property_changed_notification.propertyName.into();
                 let property_changed_info = PropertyChangedInfo {
                     object: Object(property_changed_notification.object),
                     object_type,
@@ -126,10 +125,10 @@ impl Notification {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     use core_foundation::string::CFString;
     use core_foundation::base::{TCFType, OSStatus};
-
     use coremidi_sys::{
         MIDIObjectRef,
         MIDINotification,
@@ -147,10 +146,10 @@ mod tests {
         kMIDIObjectType_Device, kMIDIObjectType_Other
     };
 
-    use Object;
-    use Device;
-    use object::ObjectType;
-    use notifications::{Notification, AddedRemovedInfo, PropertyChangedInfo, IOErrorInfo};
+    use crate::{
+        Client,
+        property,
+    };
 
     #[test]
     fn notification_from_error() {
@@ -261,6 +260,11 @@ mod tests {
 
     #[test]
     fn notification_from_property_changed() {
+        // Note: Until a Client is started, Property constants won't have the
+        // correct string value, since CoreMIDI initializes them when a client
+        // is created
+        let _client = Client::new("Test Client").unwrap();
+
         let name = CFString::new("name");
         let notification_raw = MIDIObjectPropertyChangeNotification {
             messageID: kMIDIMsgPropertyChanged as MIDINotificationMessageID,
@@ -278,7 +282,7 @@ mod tests {
         let info = PropertyChangedInfo {
             object: Object(1),
             object_type: ObjectType::Device,
-            property_name: "name".to_string()
+            property_name: property::NAME.into(),
         };
 
         assert_eq!(notification.unwrap(), Notification::PropertyChanged(info));
