@@ -65,86 +65,111 @@ impl PropertyKeyStorage {
     }
 }
 
+/// A type that can be returned from a Property
 pub trait PropertyValue { }
 impl PropertyValue for String { }
 impl PropertyValue for i32 { }
 impl PropertyValue for bool { }
 
-pub struct PropertyNameRef<'a, V> where
+/// A type that can represent a standard CoreMIDI property
+pub trait StandardProperty : Into<CFStringRef> + Clone {
+    type Value: PropertyValue;
+}
+
+impl StandardProperty for StringProperty {
+    type Value = String;
+}
+
+impl StandardProperty for IntegerProperty {
+    type Value = i32;
+}
+
+impl StandardProperty for BooleanProperty {
+    type Value = bool;
+}
+
+/// A custom CoreMIDI property
+#[derive(Clone, Debug)]
+pub struct CustomProperty<V> where
     V: PropertyValue
 {
-    inner: CFStringRef,
-    _lifetime_marker: PhantomData<&'a CFStringRef>,
+    inner: CFString,
     _value_type_marker: PhantomData<*const V>,
 }
 
-impl<'a, V> PropertyNameRef<'a, V> where
+impl<V> CustomProperty<V> where
     V: PropertyValue
 {
-    fn new(inner: CFStringRef) -> Self {
+    fn new<S>(name: S) -> Self where
+        S: AsRef<str>
+    {
+        let inner = CFString::new(name.as_ref());
         Self {
             inner,
-            _lifetime_marker: PhantomData,
             _value_type_marker: PhantomData,
         }
     }
 }
 
-pub trait PropertyKind : Into<CFStringRef> + Clone {
-    type Value: PropertyValue;
-}
-
-impl PropertyKind for StringProperty {
-    type Value = String;
-}
-
-impl PropertyKind for IntegerProperty {
-    type Value = i32;
-}
-
-impl PropertyKind for BooleanProperty {
-    type Value = bool;
+/// Can represent any kind of MIDI object property
+pub enum Property {
+    String(StringProperty),
+    Integer(IntegerPropertyNew),
+    Boolean(BooleanPropertyNew),
+    Custom(String),
 }
 
 /// The name of a MIDI object property, which can either be one of the standard 
 /// CoreMIDI constant property names or a custom property name.
 #[derive(Clone, Debug)]
-pub enum Property<K> where
-    K: PropertyKind
+pub enum TypedProperty<K> where
+    K: StandardProperty,
 {
     Standard(K),
     Custom(CFString),
 }
 
-impl<K> Property<K> where
-    K: PropertyKind
+impl<K> TypedProperty<K> where
+    K: StandardProperty,
 {
-    fn new(name: String) -> Self {
-        Property::Custom(CFString::new(&name))
+    pub(crate) fn custom<S: AsRef<str>>(name: S) -> Self {
+        TypedProperty::Custom(CFString::new(name.as_ref()))
     }
 
     /// Return a raw CFStringRef pointing to this property key
     ///
     /// Note: Should only be used internally
-    fn as_name_ref(&self) -> PropertyNameRef<K::Value> {
+    pub(crate) fn as_string_ref(&self) -> CFStringRef {
         match self {
-            Property::Standard(constant) => {
-                let string_ref = Into::into(constant.clone());
-                PropertyNameRef::new(string_ref)
-            },
-            Property::Custom(owned) => PropertyNameRef::new(owned.as_concrete_TypeRef()),
+            TypedProperty::Standard(constant) => Into::into(constant.clone()),
+            TypedProperty::Custom(custom) => custom.as_concrete_TypeRef(),
         }
     }
 }
 
-impl<K> From<K> for Property<K> where
-    K: PropertyKind
+impl<K> From<K> for TypedProperty<K> where
+    K: StandardProperty,
 {
     fn from(prop: K) -> Self {
-        Property::Standard(prop)
+        TypedProperty::Standard(prop)
     }
 }
 
+impl<K> From<String> for TypedProperty<K> where
+    K: StandardProperty,
+{
+    fn from(s: String) -> Self {
+        TypedProperty::custom(s)
+    }
+}
+
+impl<K> From<&str> for TypedProperty<K> where
+    K: StandardProperty,
+{
+    fn from(s: &str) -> Self {
+        TypedProperty::custom(s)
+    }
+}
 
 /// A valid MIDI object property whose value is a String
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
