@@ -47,7 +47,7 @@ impl PropertyValue for i32 { }
 impl PropertyValue for bool { }
 
 /// A type that can represent a standard CoreMIDI property
-pub trait StandardProperty : Into<CFStringRef> + Clone {
+pub trait StandardProperty : Into<CFStringRef> + Copy + Clone {
     type Value: PropertyValue;
 }
 
@@ -102,7 +102,7 @@ impl<K> TypedPropertyName<K> where
     /// Note: Should never be exposed externally
     pub(crate) fn as_string_ref(&self) -> CFStringRef {
         match self {
-            TypedPropertyName::Standard(constant) => Into::into(constant.clone()),
+            TypedPropertyName::Standard(constant) => Into::into(*constant),
             TypedPropertyName::Custom(custom) => custom.as_concrete_TypeRef(),
         }
     }
