@@ -61,25 +61,25 @@ impl ObjectType {
 }
 
 impl Object {
-    /// Get the name for the object.
+    /// Get the name of this object.
     ///
     pub fn name(&self) -> Option<String> {
         self.get_property_string(StringProperty::Name).ok()
     }
 
-    /// Get the unique id for the object.
+    /// Get the unique id of this object.
     ///
     pub fn unique_id(&self) -> Option<u32> {
         self.get_property_integer(IntegerProperty::UniqueId).ok().map(|v: SInt32| v as u32)
     }
 
-    /// Get the display name for the object.
+    /// Get the display name of this object.
     ///
     pub fn display_name(&self) -> Option<String> {
         self.get_property_string(StringProperty::DisplayName).ok()
     }
 
-    /// Sets this object's string-type property.
+    /// Sets the value of a string-type property for this object.
     ///
     pub fn set_property_string<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<StringPropertyName>, 
@@ -89,7 +89,7 @@ impl Object {
         set_string_property_inner(self, name.as_string_ref(), value)
     }
 
-    /// Gets this object's string-type property.
+    /// Gets the value of a string-type property for this object.
     ///
     pub fn get_property_string<N>(&self, name: N) -> Result<String, OSStatus> where
         N: Into<StringPropertyName>, 
@@ -98,7 +98,7 @@ impl Object {
         get_string_property_inner(self, name.as_string_ref())
     }
 
-    /// Sets this object's integer-type property.
+    /// Sets the value of a integer-type property for this object.
     ///
     pub fn set_property_integer<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<IntegerPropertyName>, 
@@ -108,7 +108,7 @@ impl Object {
         set_integer_property_inner(self, name.as_string_ref(), value.into())
     }
 
-    /// Gets this object's integer-type property.
+    /// Gets the value of a integer-type property for this object.
     ///
     pub fn get_property_integer<N>(&self, name: N) -> Result<i32, OSStatus> where 
         N: Into<IntegerPropertyName>, 
@@ -117,9 +117,9 @@ impl Object {
         get_integer_property_inner(self, name.as_string_ref())
     }
 
-    /// Sets this object's boolean-type property.
+    /// Sets the value of a boolean-type property for this object.
     ///
-    /// CoreMIDI treats booleans as integers (0/1) but this API uses native bool types
+    /// CoreMIDI treats booleans as integers (`0`/`1`) but this crate uses Rust `bool`s
     ///
     pub fn set_property_boolean<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<BooleanPropertyName>, 
@@ -130,9 +130,9 @@ impl Object {
         set_integer_property_inner(self, name.as_string_ref(), value)
     }
 
-    /// Gets this object's boolean-type property.
+    /// Gets the value of a boolean-type property for this object.
     ///
-    /// CoreMIDI treats booleans as integers (0/1) but this API uses native bool types
+    /// CoreMIDI treats booleans as integers (`0`/`1`) but this crate uses Rust `bool`s
     ///
     pub fn get_property_boolean<N>(&self, name: N) -> Result<bool, OSStatus> where
         N: Into<BooleanPropertyName>, 
