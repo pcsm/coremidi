@@ -4,8 +4,6 @@ use coremidi::{
     Client,
     PacketList,
     Properties,
-    PropertyGetter,
-    PropertySetter, 
 };
 
 fn main() {
@@ -21,9 +19,9 @@ fn main() {
     println!("Created Virtual Destination...");
 
     // How to get a property
-    let name: String = Properties::name().value_from(&destination).unwrap();
+    let name = destination.get_property_string(Properties::name()).unwrap();
     println!("With Name: {}", name);
 
     // How to set a property
-    Properties::private().set_value(&destination, true).unwrap();
+    destination.set_property_boolean(Properties::private(), true).unwrap();
 }

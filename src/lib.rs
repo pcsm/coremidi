@@ -248,7 +248,16 @@ mod notifications;
 pub use endpoints::destinations::Destinations;
 pub use endpoints::sources::Sources;
 pub use packets::{PacketListIterator, Packet, PacketBuffer};
-pub use properties::{Properties, PropertyGetter, PropertySetter, PropertyName, BooleanProperty, IntegerProperty, StringProperty};
+pub use properties::{
+    Properties,
+    PropertyName,
+    BooleanProperty, 
+    BooleanPropertyName,
+    IntegerProperty,
+    IntegerPropertyName,
+    StringProperty,
+    StringPropertyName,
+};
 pub use notifications::{
     AddedRemovedInfo,
     IOErrorInfo,

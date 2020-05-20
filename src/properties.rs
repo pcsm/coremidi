@@ -30,14 +30,6 @@ macro_rules! match_property_keys {
     }
 }
 
-pub trait PropertyGetter<T> {
-    fn value_from(&self, object: &Object) -> Result<T, OSStatus>;
-}
-
-pub trait PropertySetter<T> {
-    fn set_value(&self, object: &Object, value: T) -> Result<(), OSStatus>;
-}
-
 /// A type that can be returned from a Property
 pub trait PropertyValue { }
 impl PropertyValue for String { }
@@ -180,18 +172,6 @@ impl From<StringProperty> for CFStringRef {
     }
 }
 
-impl PropertyGetter<String> for StringProperty {
-    fn value_from(&self, object: &Object) -> Result<String, OSStatus> {
-        get_string_property_inner(object, *self)
-    }
-}
-
-impl<T> PropertySetter<T> for StringProperty where T: AsRef<str> {
-    fn set_value(&self, object: &Object, value: T) -> Result<(), OSStatus> {
-        set_string_property_inner(object, *self, value)
-    }
-}
-
 pub fn get_string_property_inner<N>(object: &Object, name: N) -> Result<String, OSStatus> where
     N: Into<StringPropertyName>,
 {
@@ -289,18 +269,6 @@ impl From<IntegerProperty> for CFStringRef {
                 MaxTransmitChannels => kMIDIPropertyMaxTransmitChannels,
             }
         }
-    }
-}
-
-impl PropertyGetter<i32> for IntegerProperty where {
-    fn value_from(&self, object: &Object) -> Result<i32, OSStatus> {
-        get_integer_property_inner(object, *self)
-    }
-}
-
-impl <T> PropertySetter<T> for IntegerProperty where T: Into<i32> {
-    fn set_value(&self, object: &Object, value: T) -> Result<(), OSStatus> {
-        set_integer_property_inner(object, *self, value)
     }
 }
 
@@ -480,18 +448,6 @@ pub fn set_boolean_property_inner<N, V>(object: &Object, name: N, value: V) -> R
     set_integer_property_inner_concrete(object, name.as_string_ref(), value)
 }
 
-impl PropertyGetter<bool> for BooleanProperty {
-    fn value_from(&self, object: &Object) -> Result<bool, OSStatus> {
-        get_boolean_property_inner(object, *self)
-    }
-}
-
-impl<T> PropertySetter<T> for BooleanProperty where T: Into<bool> {
-    fn set_value(&self, object: &Object, value: T) -> Result<(), OSStatus> {
-        set_boolean_property_inner(object, *self, value)
-    }
-}
-
 /// The set of properties that might be available for MIDI objects.
 ///
 pub struct Properties;
@@ -653,16 +609,16 @@ mod tests {
         const NAME_MODIFIED: &str = "B";
 
         // Test getting the original value of the "name" property
-        fn check_get_original(property: &StringProperty, dest: &VirtualDestination) {
-            let name: String = property.value_from(dest).unwrap();
+        fn check_get_original(property: StringProperty, dest: &VirtualDestination) {
+            let name = dest.get_property_string(property).unwrap();
 
             assert_eq!(name, NAME_ORIG);
         }
 
         // Test setting then getting the "name" property
-        fn check_roundtrip(property: &StringProperty, dest: &VirtualDestination) {
-            property.set_value(dest, NAME_MODIFIED).unwrap();
-            let name: String = property.value_from(dest).unwrap();
+        fn check_roundtrip(property: StringProperty, dest: &VirtualDestination) {
+            dest.set_property_string(property, NAME_MODIFIED).unwrap();
+            let name = dest.get_property_string(property).unwrap();
 
             assert_eq!(name, NAME_MODIFIED);
         }
@@ -672,8 +628,8 @@ mod tests {
             let (_client, dest) = setup();
             let property = Properties::name();
 
-            check_get_original(&property, &dest);
-            check_roundtrip(&property, &dest);
+            check_get_original(property, &dest);
+            check_roundtrip(property, &dest);
         }
     }
 
@@ -688,7 +644,7 @@ mod tests {
             // Is not set by default for Virtual Destinations
             let property = Properties::advance_schedule_time_musec();
 
-            let value: Result<i32, _> = property.value_from(&dest);
+            let value  = dest.get_property_integer(property);
 
             assert!(value.is_err())
         }
@@ -698,8 +654,8 @@ mod tests {
             let (_client, dest) = setup();
             let property = Properties::advance_schedule_time_musec();
 
-            property.set_value(&dest, ADVANCED_SCHEDULE_TIME).unwrap();
-            let num: i32 = property.value_from(&dest).unwrap();
+            dest.set_property_integer(property, ADVANCED_SCHEDULE_TIME).unwrap();
+            let num = dest.get_property_integer(property).unwrap();
 
             assert_eq!(num, ADVANCED_SCHEDULE_TIME);
         }
@@ -714,7 +670,7 @@ mod tests {
             // Not set by default on Virtual Destinations
             let property = Properties::transmits_program_changes();
 
-            let value: Result<bool, _> = property.value_from(&dest);
+            let value = dest.get_property_boolean(property);
 
             assert!(value.is_err())
         }
@@ -724,8 +680,8 @@ mod tests {
             let (_client, dest) = setup();
             let property = Properties::private();
             
-            property.set_value(&dest, true).unwrap();
-            let value: bool = property.value_from(&dest).unwrap();
+            dest.set_property_boolean(property, true).unwrap();
+            let value = dest.get_property_boolean(property).unwrap();
 
             assert!(value, true)
         }
