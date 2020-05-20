@@ -25,11 +25,7 @@ pub mod string;
 pub use self::{
     constants::*,
     boolean::BooleanProperty,
-    integer::{
-        IntegerProperty,
-        get_integer_property_inner,
-        set_integer_property_inner,
-    },
+    integer::IntegerProperty,
     string::{
         StringProperty,
         get_string_property_inner,

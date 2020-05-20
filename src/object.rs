@@ -26,8 +26,6 @@ use properties::{
     StringPropertyName,
     get_string_property_inner,
     set_string_property_inner,
-    get_integer_property_inner,
-    set_integer_property_inner,
     get_integer_property_inner_concrete,
     set_integer_property_inner_concrete,
 };
@@ -81,7 +79,7 @@ impl Object {
         self.get_property_string(StringProperty::DisplayName).ok()
     }
 
-    /// Sets an object's string-type property.
+    /// Sets this object's string-type property.
     ///
     pub fn set_property_string<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<StringPropertyName>, 
@@ -90,7 +88,7 @@ impl Object {
         set_string_property_inner(self, name, value)
     }
 
-    /// Gets an object's string-type property.
+    /// Gets this object's string-type property.
     ///
     pub fn get_property_string<N>(&self, name: N) -> Result<String, OSStatus> where
         N: Into<StringPropertyName>, 
@@ -98,24 +96,26 @@ impl Object {
         get_string_property_inner(self, name)
     }
 
-    /// Sets an object's integer-type property.
+    /// Sets this object's integer-type property.
     ///
     pub fn set_property_integer<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<IntegerPropertyName>, 
         V: Into<i32>,
     {
-        set_integer_property_inner(self, name, value)
+        let name = name.into();
+        set_integer_property_inner_concrete(self, name.as_string_ref(), value.into())
     }
 
-    /// Gets an object's integer-type property.
+    /// Gets this object's integer-type property.
     ///
     pub fn get_property_integer<N>(&self, name: N) -> Result<i32, OSStatus> where 
         N: Into<IntegerPropertyName>, 
     {
-        get_integer_property_inner(self, name)
+        let name = name.into();
+        get_integer_property_inner_concrete(self, name.as_string_ref())
     }
 
-    /// Sets an object's boolean-type property.
+    /// Sets this object's boolean-type property.
     ///
     /// CoreMIDI treats booleans as integers (0/1) but this API uses native bool types
     ///
@@ -128,7 +128,7 @@ impl Object {
         set_integer_property_inner_concrete(self, name.as_string_ref(), value)
     }
 
-    /// Gets an object's boolean-type property.
+    /// Gets this object's boolean-type property.
     ///
     /// CoreMIDI treats booleans as integers (0/1) but this API uses native bool types
     ///

@@ -16,8 +16,6 @@ use {
     unit_result_from_status,
 };
 
-use super::IntegerPropertyName;
-
 /// A MIDI object property whose value is an Integer
 ///
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -89,13 +87,6 @@ impl From<IntegerProperty> for CFStringRef {
     }
 }
 
-pub fn get_integer_property_inner<N>(object: &Object, name: N) -> Result<i32, OSStatus> where
-    N: Into<IntegerPropertyName>,
-{
-    let name = name.into();
-    get_integer_property_inner_concrete(object, name.as_string_ref())
-}
-
 pub(crate) fn get_integer_property_inner_concrete(object: &Object, name: CFStringRef) -> Result<i32, OSStatus> {
     let mut value = MaybeUninit::uninit();
     let status = unsafe {
@@ -105,14 +96,6 @@ pub(crate) fn get_integer_property_inner_concrete(object: &Object, name: CFStrin
         let value = unsafe { value.assume_init() };
         value.into()
     })
-}
-
-pub fn set_integer_property_inner<N, V>(object: &Object, name: N, value: V) -> Result<(), OSStatus> where
-    N: Into<IntegerPropertyName>,
-    V: Into<i32>,
-{
-    let name = name.into();
-    set_integer_property_inner_concrete(object, name.as_string_ref(), value.into())
 }
 
 pub(crate) fn set_integer_property_inner_concrete(object: &Object, name: CFStringRef, value: i32) -> Result<(), OSStatus> {
