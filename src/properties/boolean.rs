@@ -143,7 +143,7 @@ impl From<BooleanProperty> for CFStringRef {
 mod tests {
     use crate::{
         Client,
-        properties,
+        property,
         VirtualDestination,
     };
 
@@ -157,7 +157,7 @@ mod tests {
     fn test_not_set() {
         let (_client, dest) = setup();
         // Not set by default on Virtual Destinations
-        let property = properties::TRANSMITS_PROGRAM_CHANGES;
+        let property = property::TRANSMITS_PROGRAM_CHANGES;
 
         let value = dest.get_property_boolean(property);
 
@@ -167,7 +167,7 @@ mod tests {
     #[test]
     fn test_roundtrip() {
         let (_client, dest) = setup();
-        let property = properties::PRIVATE;
+        let property = property::PRIVATE;
         
         dest.set_property_boolean(property, true).unwrap();
         let value = dest.get_property_boolean(property).unwrap();

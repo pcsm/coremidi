@@ -116,7 +116,7 @@ pub(crate) fn set_integer_property_inner(object: &Object, name: CFStringRef, val
 mod tests {
     use crate::{
         Client,
-        properties,
+        property,
         VirtualDestination,
     };
 
@@ -132,7 +132,7 @@ mod tests {
     fn test_not_set() {
         let (_client, dest) = setup();
         // Is not set by default for Virtual Destinations
-        let property = properties::ADVANCED_SCHEDULE_TIME_MUSEC;
+        let property = property::ADVANCED_SCHEDULE_TIME_MUSEC;
 
         let value  = dest.get_property_integer(property);
 
@@ -142,7 +142,7 @@ mod tests {
     #[test]
     fn test_roundtrip() {
         let (_client, dest) = setup();
-        let property = properties::ADVANCED_SCHEDULE_TIME_MUSEC;
+        let property = property::ADVANCED_SCHEDULE_TIME_MUSEC;
 
         dest.set_property_integer(property, ADVANCED_SCHEDULE_TIME).unwrap();
         let num = dest.get_property_integer(property).unwrap();

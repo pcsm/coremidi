@@ -23,7 +23,6 @@ pub mod integer;
 pub mod string;
 
 pub use self::{
-    constants::*,
     boolean::{
         BooleanProperty,
         BooleanPropertyName,

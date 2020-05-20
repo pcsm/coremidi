@@ -1,9 +1,3 @@
-//! The set of CoreMIDI-defined properties that might be available for MIDI objects.
-//!
-//! Note that [`kMIDIPropertyNameConfiguration`](https://developer.apple.com/reference/coremidi/kMIDIPropertyNameConfiguration)
-//! and [`kMIDIPropertyImage`](https://developer.apple.com/reference/coremidi/kMIDIPropertyImage)
-//! are not currently supported.
-
 use super::{
     BooleanProperty,
     IntegerProperty,

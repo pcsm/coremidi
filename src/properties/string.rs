@@ -110,7 +110,7 @@ mod tests {
 
     use crate::{
         Client,
-        properties,
+        property,
         VirtualDestination,
     };
 
@@ -141,7 +141,7 @@ mod tests {
     #[test]
     fn test_from_constant() {
         let (_client, dest) = setup();
-        let property = properties::NAME;
+        let property = property::NAME;
 
         check_get_original(property, &dest);
         check_roundtrip(property, &dest);

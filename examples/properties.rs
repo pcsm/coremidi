@@ -3,7 +3,7 @@ extern crate coremidi;
 use coremidi::{
     Client,
     PacketList,
-    properties,
+    property,
 };
 
 fn main() {
@@ -23,8 +23,8 @@ fn main() {
     println!(" - Name: {}", name);
 
     // Setting and getting a property that doesn't have a convenience accessor
-    destination.set_property_boolean(properties::PRIVATE, true).unwrap();
-    let private = destination.get_property_boolean(properties::PRIVATE).unwrap();
+    destination.set_property_boolean(property::PRIVATE, true).unwrap();
+    let private = destination.get_property_boolean(property::PRIVATE).unwrap();
     println!(" - Private: {}", private);
 
     // Setting and getting a private property

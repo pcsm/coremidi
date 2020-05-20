@@ -242,9 +242,18 @@ mod devices;
 mod client;
 mod ports;
 mod packets;
-pub mod properties;
+mod properties;
 mod endpoints;
 mod notifications;
+pub mod property {
+    //! The set of CoreMIDI-defined properties that might be available for MIDI objects.
+    //!
+    //! Note that [`kMIDIPropertyNameConfiguration`](https://developer.apple.com/reference/coremidi/kMIDIPropertyNameConfiguration)
+    //! and [`kMIDIPropertyImage`](https://developer.apple.com/reference/coremidi/kMIDIPropertyImage)
+    //! are not currently supported.
+
+    pub use super::properties::constants::*;
+}
 pub use endpoints::destinations::Destinations;
 pub use endpoints::sources::Sources;
 pub use packets::{PacketListIterator, Packet, PacketBuffer};
@@ -256,6 +265,8 @@ pub use properties::{
     IntegerPropertyName,
     StringProperty,
     StringPropertyName,
+    TypedPropertyName,
+    StandardProperty,
 };
 pub use notifications::{
     AddedRemovedInfo,
