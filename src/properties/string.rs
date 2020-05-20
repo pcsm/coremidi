@@ -95,10 +95,10 @@ pub(crate) fn set_string_property_inner<V>(object: &Object, name: CFStringRef, v
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::super::constants;
 
-    use ::{
+    use crate::{
         Client,
+        properties,
         VirtualDestination,
     };
 
@@ -129,7 +129,7 @@ mod tests {
     #[test]
     fn test_from_constant() {
         let (_client, dest) = setup();
-        let property = constants::NAME;
+        let property = properties::NAME;
 
         check_get_original(property, &dest);
         check_roundtrip(property, &dest);

@@ -1,6 +1,4 @@
-use core_foundation::{
-    string::CFStringRef,
-};
+use core_foundation::string::CFStringRef;
 use coremidi_sys::*;
 
 /// A MIDI object property whose value is a Boolean
@@ -132,10 +130,9 @@ impl From<BooleanProperty> for CFStringRef {
 
 #[cfg(test)]
 mod tests {
-    use crate::properties;
-
-    use ::{
+    use crate::{
         Client,
+        properties,
         VirtualDestination,
     };
 

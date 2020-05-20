@@ -1,10 +1,6 @@
 use core_foundation::{
-    string::{
-        CFStringRef,
-    },
-    base::{
-        OSStatus,
-    }
+    string::CFStringRef,
+    base::OSStatus,
 };
 use coremidi_sys::*;
 
@@ -107,10 +103,9 @@ pub(crate) fn set_integer_property_inner(object: &Object, name: CFStringRef, val
 
 #[cfg(test)]
 mod tests {
-    use crate::properties;
-
-    use ::{
+    use crate::{
         Client,
+        properties,
         VirtualDestination,
     };
 
