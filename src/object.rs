@@ -1,5 +1,9 @@
 #![allow(non_upper_case_globals)]
 
+use core_foundation::{
+    base::TCFType,
+    string::CFString,
+};
 use core_foundation_sys::base::OSStatus;
 
 use coremidi_sys::{
@@ -19,8 +23,16 @@ use std::fmt;
 
 use Object;
 use properties::{
-    PropertyGetter, PropertySetter, Properties,
-    StringProperty, IntegerProperty, BooleanProperty
+    Property,
+    PropertyKind,
+    PropertyGetter,
+    PropertySetter,
+    Properties,
+    IntegerProperty,
+    BooleanProperty,
+    StringProperty,
+    get_string_property_inner,
+    set_string_property_inner,
 };
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -74,14 +86,21 @@ impl Object {
 
     /// Sets an object's string-type property.
     ///
-    pub fn set_property_string(&self, name: &str, value: &str) -> Result<(), OSStatus> {
-        StringProperty::new(name).set_value(self, value)
+    pub fn set_property_string<N, T>(&self, name: N, value: T) -> Result<(), OSStatus> where
+        N: AsRef<str>,
+        T: AsRef<str>, 
+    {
+        let name = CFString::new(name.as_ref());
+        set_string_property_inner(self, name.as_concrete_TypeRef(), value)
     }
 
     /// Gets an object's string-type property.
     ///
-    pub fn get_property_string(&self, name: &str) -> Result<String, OSStatus> {
-        StringProperty::new(name).value_from(self)
+    pub fn get_property_string<N>(&self, name: N) -> Result<String, OSStatus> where
+        N: AsRef<str>
+    {
+        let name = CFString::new(name.as_ref());
+        get_string_property_inner(self, name.as_concrete_TypeRef())
     }
 
     /// Sets an object's integer-type property.
@@ -121,8 +140,6 @@ impl fmt::Debug for Object {
 
 #[cfg(test)]
 mod tests {
-    use object::ObjectType;
-
     use coremidi_sys::{
         kMIDIObjectType_Other,
         kMIDIObjectType_Device,
@@ -134,6 +151,35 @@ mod tests {
         kMIDIObjectType_ExternalSource,
         kMIDIObjectType_ExternalDestination
     };
+
+    use ::{
+        Client,
+        VirtualDestination,
+        object::ObjectType,
+    };
+
+    const NAME_ORIG: &str = "A";
+    const NAME_MODIFIED: &str = "B";
+
+    fn setup() -> (Client, VirtualDestination) {
+        let client = Client::new("Test Client").unwrap();
+        let dest = client.virtual_destination(NAME_ORIG, |_|()).unwrap();
+        (client, dest)
+    }
+
+    // Test getting the original value of the property
+    fn check_get_original(name: &str, dest: &VirtualDestination) {
+        let name: String = dest.get_property_string(name).unwrap();
+
+        assert_eq!(name, NAME_ORIG);
+    }
+
+    fn check_roundtrip(name: &str, dest: &VirtualDestination) {
+        dest.set_property_string(name, NAME_MODIFIED).unwrap();
+        let name: String = dest.get_property_string(name).unwrap();
+
+        assert_eq!(name, NAME_MODIFIED);
+    }
 
     #[test]
     fn objecttype_from() {
@@ -151,5 +197,15 @@ mod tests {
     #[test]
     fn objecttype_from_error() {
         assert_eq!(ObjectType::from(0xffff as i32), Err(0xffff));
+    }
+
+    #[test]
+    fn test_set_property_string() {
+        let (_client, dest) = setup();
+        // "name" is the value of the CoreMidi constant kMIDIPropertyName
+        let name = "name";
+
+        check_get_original(name, &dest);
+        check_roundtrip(name, &dest);
     }
 }
