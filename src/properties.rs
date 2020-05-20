@@ -19,6 +19,8 @@ use {
     unit_result_from_status,
 };
 
+pub use self::constants::*;
+
 macro_rules! match_property_keys {
     ($match_var:ident, $($prop_name:ident -> $key_name: ident,)*) => {
         Ok(match $match_var {
@@ -448,142 +450,139 @@ pub fn set_boolean_property_inner<N, V>(object: &Object, name: N, value: V) -> R
     set_integer_property_inner_concrete(object, name.as_string_ref(), value)
 }
 
-/// The set of properties that might be available for MIDI objects.
+/// The set of CoreMIDI-defined properties that might be available for MIDI objects.
 ///
-pub struct Properties;
+/// Note that [`kMIDIPropertyNameConfiguration`](https://developer.apple.com/reference/coremidi/kMIDIPropertyNameConfiguration)
+/// and [`kMIDIPropertyImage`](https://developer.apple.com/reference/coremidi/kMIDIPropertyImage)
+/// are not currently supported.
+pub mod constants {
+    use super::*;
 
-impl Properties {
     /// See [kMIDIPropertyName](https://developer.apple.com/reference/coremidi/kmidipropertyname)
-    pub fn name() -> StringProperty { StringProperty::Name }
-    
+    pub const NAME: StringProperty = StringProperty::Name;
+
     /// See [kMIDIPropertyManufacturer](https://developer.apple.com/reference/coremidi/kmidipropertymanufacturer)
-    pub fn manufacturer() -> StringProperty { StringProperty::Manufacturer }
+    pub const MANUFACTURER: StringProperty = StringProperty::Manufacturer;
     
     /// See [kMIDIPropertyModel](https://developer.apple.com/reference/coremidi/kmidipropertymodel)
-    pub fn model() -> StringProperty { StringProperty::Model }
-    
+    pub const MODEL: StringProperty = StringProperty::Model;
+
     /// See [kMIDIPropertyUniqueID](https://developer.apple.com/reference/coremidi/kmidipropertyuniqueid)
-    pub fn unique_id() -> IntegerProperty { IntegerProperty::UniqueId }
+    pub const UNIQUE_ID: IntegerProperty = IntegerProperty::UniqueId;
     
     /// See [kMIDIPropertyDeviceID](https://developer.apple.com/reference/coremidi/kmidipropertydeviceid)
-    pub fn device_id() -> IntegerProperty { IntegerProperty::DeviceId }
+    pub const DEVICE_ID: IntegerProperty = IntegerProperty::DeviceId;
     
     /// See [kMIDIPropertyReceiveChannels](https://developer.apple.com/reference/coremidi/kmidipropertyreceivechannels)
-    pub fn receive_channels() -> IntegerProperty { IntegerProperty::ReceiveChannels }
+    pub const RECEIVE_CHANNELS: IntegerProperty = IntegerProperty::ReceiveChannels;
     
     /// See [kMIDIPropertyTransmitChannels](https://developer.apple.com/reference/coremidi/kmidipropertytransmitchannels)
-    pub fn transmit_channels() -> IntegerProperty { IntegerProperty::TransmitChannels }
+    pub const TRANSMIT_CHANNELS: IntegerProperty = IntegerProperty::TransmitChannels;
     
     /// See [kMIDIPropertyMaxSysExSpeed](https://developer.apple.com/reference/coremidi/kmidipropertymaxsysexspeed)
-    pub fn max_sysex_speed() -> IntegerProperty { IntegerProperty::MaxSysExSpeed }
+    pub const MAX_SYSEX_SPEED: IntegerProperty = IntegerProperty::MaxSysExSpeed;
     
     /// See [kMIDIPropertyAdvanceScheduleTimeMuSec](https://developer.apple.com/reference/coremidi/kMIDIPropertyAdvanceScheduleTimeMuSec)
-    pub fn advance_schedule_time_musec() -> IntegerProperty { IntegerProperty::AdvanceScheduleTimeMuSec }
+    pub const ADVANCED_SCHEDULE_TIME_MUSEC: IntegerProperty = IntegerProperty::AdvanceScheduleTimeMuSec;
     
     /// See [kMIDIPropertyIsEmbeddedEntity](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEmbeddedEntity)
-    pub fn is_embedded_entity() -> BooleanProperty { BooleanProperty::IsEmbeddedEntity }
-    
+    pub const IS_EMBEDDED_ENTITY: BooleanProperty = BooleanProperty::IsEmbeddedEntity;
+
     /// See [kMIDIPropertyIsBroadcast](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsBroadcast)
-    pub fn is_broadcast() -> BooleanProperty { BooleanProperty::IsBroadcast }
+    pub const IS_BROADCAST: BooleanProperty = BooleanProperty::IsBroadcast;
     
     /// See [kMIDIPropertySingleRealtimeEntity](https://developer.apple.com/reference/coremidi/kMIDIPropertySingleRealtimeEntity)
-    pub fn single_realtime_entity() -> IntegerProperty { IntegerProperty::SingleRealtimeEntity }
+    pub const SINGLE_REALTIME_ENTITY: IntegerProperty = IntegerProperty::SingleRealtimeEntity;
     
     /// See [kMIDIPropertyConnectionUniqueID](https://developer.apple.com/reference/coremidi/kMIDIPropertyConnectionUniqueID)
-    pub fn connection_unique_id() -> IntegerProperty { IntegerProperty::ConnectionUniqueId }
+    pub const CONNECTION_UNIQUE_ID: IntegerProperty = IntegerProperty::ConnectionUniqueId;
     
     /// See [kMIDIPropertyOffline](https://developer.apple.com/reference/coremidi/kMIDIPropertyOffline)
-    pub fn offline() -> BooleanProperty { BooleanProperty::Offline }
+    pub const OFFLINE: BooleanProperty = BooleanProperty::Offline;
     
     /// See [kMIDIPropertyPrivate](https://developer.apple.com/reference/coremidi/kMIDIPropertyPrivate)
-    pub fn private() -> BooleanProperty { BooleanProperty::Private }
+    pub const PRIVATE: BooleanProperty = BooleanProperty::Private;
     
     /// See [kMIDIPropertyDriverOwner](https://developer.apple.com/reference/coremidi/kMIDIPropertyDriverOwner)
-    pub fn driver_owner() -> StringProperty { StringProperty::DriverOwner }
-    
-    // /// See [kMIDIPropertyNameConfiguration](https://developer.apple.com/reference/coremidi/kMIDIPropertyNameConfiguration)
-    // pub fn name_configuration() -> Property { unsafe { Property(kMIDIPropertyNameConfiguration) } }
-    
-    // /// See [kMIDIPropertyImage](https://developer.apple.com/reference/coremidi/kMIDIPropertyImage)
-    // pub fn image() -> Property { unsafe { Property(kMIDIPropertyImage) } }
+    pub const DRIVER_OWNER: StringProperty = StringProperty::DriverOwner;
     
     /// See [kMIDIPropertyDriverVersion](https://developer.apple.com/reference/coremidi/kMIDIPropertyDriverVersion)
-    pub fn driver_version() -> IntegerProperty { IntegerProperty::DriverVersion }
+    pub const DRIVER_VERSION: IntegerProperty = IntegerProperty::DriverVersion;
     
     /// See [kMIDIPropertySupportsGeneralMIDI](https://developer.apple.com/reference/coremidi/kMIDIPropertySupportsGeneralMIDI)
-    pub fn supports_general_midi() -> BooleanProperty { BooleanProperty::SupportsGeneralMIDI }
+    pub const SUPPORTS_GENERAL_MIDI: BooleanProperty = BooleanProperty::SupportsGeneralMIDI;
     
     /// See [kMIDIPropertySupportsMMC](https://developer.apple.com/reference/coremidi/kMIDIPropertySupportsMMC)
-    pub fn supports_mmc() -> BooleanProperty { BooleanProperty::SupportsMMC }
+    pub const SUPPORTS_MMC: BooleanProperty = BooleanProperty::SupportsMMC;
     
     /// See [kMIDIPropertyCanRoute](https://developer.apple.com/reference/coremidi/kMIDIPropertyCanRoute)
-    pub fn can_route() -> BooleanProperty { BooleanProperty::CanRoute }
+    pub const CAN_ROUTE: BooleanProperty = BooleanProperty::CanRoute;
     
     /// See [kMIDIPropertyReceivesClock](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesClock)
-    pub fn receives_clock() -> BooleanProperty { BooleanProperty::ReceivesClock }
+    pub const RECEIVES_CLOCK: BooleanProperty = BooleanProperty::ReceivesClock;
     
     /// See [kMIDIPropertyReceivesMTC](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesMTC)
-    pub fn receives_mtc() -> BooleanProperty { BooleanProperty::ReceivesMTC }
+    pub const RECEIVES_MTC: BooleanProperty = BooleanProperty::ReceivesMTC;
     
     /// See [kMIDIPropertyReceivesNotes](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesNotes)
-    pub fn receives_notes() -> BooleanProperty { BooleanProperty::ReceivesNotes }
+    pub const RECEIVES_NOTES: BooleanProperty = BooleanProperty::ReceivesNotes;
     
     /// See [kMIDIPropertyReceivesProgramChanges](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesProgramChanges)
-    pub fn receives_program_changes() -> BooleanProperty { BooleanProperty::ReceivesProgramChanges }
+    pub const RECEIVES_PROGRAM_CHANGES: BooleanProperty = BooleanProperty::ReceivesProgramChanges;
     
     /// See [kMIDIPropertyReceivesBankSelectMSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesBankSelectMSB)
-    pub fn receives_bank_select_msb() -> BooleanProperty { BooleanProperty::ReceivesBankSelectMSB }
+    pub const RECEIVES_BANK_SELECT_MSB: BooleanProperty = BooleanProperty::ReceivesBankSelectMSB;
 
     /// See [kMIDIPropertyReceivesBankSelectLSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyReceivesBankSelectLSB)
-    pub fn receives_bank_select_lsb() -> BooleanProperty { BooleanProperty::ReceivesBankSelectLSB }
+    pub const RECEIVES_BANK_SELECT_LSB: BooleanProperty = BooleanProperty::ReceivesBankSelectLSB;
 
     /// See [kMIDIPropertyTransmitsBankSelectMSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsBankSelectMSB)
-    pub fn transmits_bank_select_msb() -> BooleanProperty { BooleanProperty::TransmitsBankSelectMSB }
+    pub const TRANSMITS_BANK_SELECT_MSB: BooleanProperty = BooleanProperty::TransmitsBankSelectMSB;
 
     /// See [kMIDIPropertyTransmitsBankSelectLSB](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsBankSelectLSB)
-    pub fn transmits_bank_select_lsb() -> BooleanProperty { BooleanProperty::TransmitsBankSelectLSB }
+    pub const TRANSMITS_BANK_SELECT_LSB: BooleanProperty = BooleanProperty::TransmitsBankSelectLSB;
 
     /// See [kMIDIPropertyTransmitsClock](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsClock)
-    pub fn transmits_clock() -> BooleanProperty { BooleanProperty::TransmitsClock }
+    pub const TRANSMITS_CLOCK: BooleanProperty = BooleanProperty::TransmitsClock;
 
     /// See [kMIDIPropertyTransmitsMTC](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsMTC)
-    pub fn transmits_mtc() -> BooleanProperty { BooleanProperty::TransmitsMTC }
+    pub const TRANSMITS_MTC: BooleanProperty = BooleanProperty::TransmitsMTC;
 
     /// See [kMIDIPropertyTransmitsNotes](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsNotes)
-    pub fn transmits_notes() -> BooleanProperty { BooleanProperty::TransmitsNotes }
+    pub const TRANSMITS_NOTES: BooleanProperty = BooleanProperty::TransmitsNotes;
 
     /// See [kMIDIPropertyTransmitsProgramChanges](https://developer.apple.com/reference/coremidi/kMIDIPropertyTransmitsProgramChanges)
-    pub fn transmits_program_changes() -> BooleanProperty { BooleanProperty::TransmitsProgramChanges }
+    pub const TRANSMITS_PROGRAM_CHANGES: BooleanProperty = BooleanProperty::TransmitsProgramChanges;
 
     /// See [kMIDIPropertyPanDisruptsStereo](https://developer.apple.com/reference/coremidi/kMIDIPropertyPanDisruptsStereo)
-    pub fn pan_disrupts_stereo() -> BooleanProperty { BooleanProperty::PanDisruptsStereo }
+    pub const PAN_DISRUPTS_STEREO: BooleanProperty = BooleanProperty::PanDisruptsStereo;
 
     /// See [kMIDIPropertyIsSampler](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsSampler)
-    pub fn is_sampler() -> BooleanProperty { BooleanProperty::IsSampler }
+    pub const IS_SAMPLER: BooleanProperty = BooleanProperty::IsSampler;
 
     /// See [kMIDIPropertyIsDrumMachine](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsDrumMachine)
-    pub fn is_drum_machine() -> BooleanProperty { BooleanProperty::IsDrumMachine }
+    pub const IS_DRUM_MACHINE: BooleanProperty = BooleanProperty::IsDrumMachine;
 
     /// See [kMIDIPropertyIsMixer](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsMixer)
-    pub fn is_mixer() -> BooleanProperty { BooleanProperty::IsMixer }
+    pub const IS_MIXER: BooleanProperty = BooleanProperty::IsMixer;
 
     /// See [kMIDIPropertyIsEffectUnit](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEffectUnit)
-    pub fn is_effect_unit() -> BooleanProperty { BooleanProperty::IsEffectUnit }
+    pub const IS_EFFECT_UNIT: BooleanProperty = BooleanProperty::IsEffectUnit;
 
     /// See [kMIDIPropertyMaxReceiveChannels](https://developer.apple.com/reference/coremidi/kMIDIPropertyMaxReceiveChannels)
-    pub fn max_receive_channels() -> IntegerProperty { IntegerProperty::MaxRecieveChannels }
+    pub const MAX_RECEIVE_CHANNELS: IntegerProperty = IntegerProperty::MaxRecieveChannels;
 
     /// See [kMIDIPropertyMaxTransmitChannels](https://developer.apple.com/reference/coremidi/kMIDIPropertyMaxTransmitChannels)
-    pub fn max_transmit_channels() -> IntegerProperty { IntegerProperty::MaxTransmitChannels }
+    pub const MAX_TRANSMIT_CHANNELS: IntegerProperty = IntegerProperty::MaxTransmitChannels;
 
     /// See [kMIDIPropertyDriverDeviceEditorApp](https://developer.apple.com/reference/coremidi/kMIDIPropertyDriverDeviceEditorApp)
-    pub fn driver_device_editor_app() -> StringProperty { StringProperty::DriverDeviceEditorApp }
-
+    pub const DRIVER_DEVICE_EDITOR_APP: StringProperty = StringProperty::DriverDeviceEditorApp;
+    
     /// See [kMIDIPropertySupportsShowControl](https://developer.apple.com/reference/coremidi/kMIDIPropertySupportsShowControl)
-    pub fn supports_show_control() -> BooleanProperty { BooleanProperty::SupportsShowControl }
+    pub const SUPPORTS_SHOW_CONTROL: BooleanProperty = BooleanProperty::SupportsShowControl;
 
     /// See [kMIDIPropertyDisplayName](https://developer.apple.com/reference/coremidi/kMIDIPropertyDisplayName)
-    pub fn display_name() -> StringProperty { StringProperty::DisplayName }
+    pub const DISPLAY_NAME: StringProperty = StringProperty::DisplayName;
 }
 
 #[cfg(test)]
@@ -626,7 +625,7 @@ mod tests {
         #[test]
         fn test_from_constant() {
             let (_client, dest) = setup();
-            let property = Properties::name();
+            let property = constants::NAME;
 
             check_get_original(property, &dest);
             check_roundtrip(property, &dest);
@@ -642,7 +641,7 @@ mod tests {
         fn test_not_set() {
             let (_client, dest) = setup();
             // Is not set by default for Virtual Destinations
-            let property = Properties::advance_schedule_time_musec();
+            let property = constants::ADVANCED_SCHEDULE_TIME_MUSEC;
 
             let value  = dest.get_property_integer(property);
 
@@ -652,7 +651,7 @@ mod tests {
         #[test]
         fn test_roundtrip() {
             let (_client, dest) = setup();
-            let property = Properties::advance_schedule_time_musec();
+            let property = constants::ADVANCED_SCHEDULE_TIME_MUSEC;
 
             dest.set_property_integer(property, ADVANCED_SCHEDULE_TIME).unwrap();
             let num = dest.get_property_integer(property).unwrap();
@@ -668,7 +667,7 @@ mod tests {
         fn test_not_set() {
             let (_client, dest) = setup();
             // Not set by default on Virtual Destinations
-            let property = Properties::transmits_program_changes();
+            let property = constants::TRANSMITS_PROGRAM_CHANGES;
 
             let value = dest.get_property_boolean(property);
 
@@ -678,7 +677,7 @@ mod tests {
         #[test]
         fn test_roundtrip() {
             let (_client, dest) = setup();
-            let property = Properties::private();
+            let property = constants::PRIVATE;
             
             dest.set_property_boolean(property, true).unwrap();
             let value = dest.get_property_boolean(property).unwrap();
