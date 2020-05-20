@@ -253,6 +253,35 @@ impl<T> PropertySetter<T> for StringProperty where T: AsRef<str> {
     }
 }
 
+pub fn get_string_property_inner<N>(object: &Object, name: N) -> Result<String, OSStatus> where
+    N: Into<StringPropertyName>,
+{
+    let name = name.into();
+    let mut string_ref = MaybeUninit::uninit();
+    let status = unsafe {
+        MIDIObjectGetStringProperty(object.0, name.as_string_ref(), string_ref.as_mut_ptr())
+    };
+    result_from_status(status, || {
+        let string_ref = unsafe { string_ref.assume_init() };
+        if string_ref.is_null() { return "".to_string().into() };
+        let cf_string: CFString = unsafe { TCFType::wrap_under_create_rule(string_ref) };
+        cf_string.to_string().into()
+    })
+}
+
+pub fn set_string_property_inner<N, V>(object: &Object, name: N, value: V) -> Result<(), OSStatus> where
+    N: Into<StringPropertyName>,
+    V: AsRef<str>,
+{
+    let name = name.into();
+    let string = CFString::new(value.as_ref());
+    let string_ref = string.as_concrete_TypeRef();
+    let status = unsafe {
+        MIDIObjectSetStringProperty(object.0, name.as_string_ref(), string_ref)
+    };
+    unit_result_from_status(status)
+}
+
 /// A MIDI object property which value is an Integer
 ///
 #[derive(Clone, Debug)]
@@ -416,35 +445,6 @@ pub enum BooleanPropertyNew {
     IsMixer,
     /// See [kMIDIPropertyIsEffectUnit](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEffectUnit)
     IsEffectUnit,
-}
-
-pub fn get_string_property_inner<N>(object: &Object, name: N) -> Result<String, OSStatus> where
-    N: Into<StringPropertyName>,
-{
-    let name = name.into();
-    let mut string_ref = MaybeUninit::uninit();
-    let status = unsafe {
-        MIDIObjectGetStringProperty(object.0, name.as_string_ref(), string_ref.as_mut_ptr())
-    };
-    result_from_status(status, || {
-        let string_ref = unsafe { string_ref.assume_init() };
-        if string_ref.is_null() { return "".to_string().into() };
-        let cf_string: CFString = unsafe { TCFType::wrap_under_create_rule(string_ref) };
-        cf_string.to_string().into()
-    })
-}
-
-pub fn set_string_property_inner<N, V>(object: &Object, name: N, value: V) -> Result<(), OSStatus> where
-    N: Into<StringPropertyName>,
-    V: AsRef<str>,
-{
-    let name = name.into();
-    let string = CFString::new(value.as_ref());
-    let string_ref = string.as_concrete_TypeRef();
-    let status = unsafe {
-        MIDIObjectSetStringProperty(object.0, name.as_string_ref(), string_ref)
-    };
-    unit_result_from_status(status)
 }
 
 /// The set of properties that might be available for MIDI objects.
