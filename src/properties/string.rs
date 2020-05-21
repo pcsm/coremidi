@@ -23,7 +23,7 @@ use {
 use super::{
     match_property_keys,
     StandardProperty,
-    TypedPropertyName,
+    TypedPropertyKey,
 };
 
 /// CoreMIDI-defined constant property names that can be used to access `String` values
@@ -43,10 +43,10 @@ pub enum StringProperty {
     DisplayName,
 }
 
-/// The name of a MIDI object property that is accessed as a `String`
-pub type StringPropertyName = TypedPropertyName<StringProperty>;
-
 impl StandardProperty for StringProperty { }
+
+/// The name of a MIDI object property that is accessed as a `String`
+pub type StringPropertyKey = TypedPropertyKey<StringProperty>;
 
 impl StringProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,
@@ -81,10 +81,10 @@ impl From<StringProperty> for CFStringRef {
     }
 }
 
-pub(crate) fn string_property_inner(object: &Object, name: CFStringRef) -> Result<String, OSStatus> {
+pub(crate) fn string_property_inner(object: &Object, key: CFStringRef) -> Result<String, OSStatus> {
     let mut string_ref = MaybeUninit::uninit();
     let status = unsafe {
-        MIDIObjectGetStringProperty(object.0, name, string_ref.as_mut_ptr())
+        MIDIObjectGetStringProperty(object.0, key, string_ref.as_mut_ptr())
     };
     result_from_status(status, || {
         let string_ref = unsafe { string_ref.assume_init() };
@@ -94,13 +94,13 @@ pub(crate) fn string_property_inner(object: &Object, name: CFStringRef) -> Resul
     })
 }
 
-pub(crate) fn set_string_property_inner<V>(object: &Object, name: CFStringRef, value: V) -> Result<(), OSStatus> where
+pub(crate) fn set_string_property_inner<V>(object: &Object, key: CFStringRef, value: V) -> Result<(), OSStatus> where
     V: AsRef<str>,
 {
     let string = CFString::new(value.as_ref());
     let string_ref = string.as_concrete_TypeRef();
     let status = unsafe {
-        MIDIObjectSetStringProperty(object.0, name, string_ref)
+        MIDIObjectSetStringProperty(object.0, key, string_ref)
     };
     unit_result_from_status(status)
 }

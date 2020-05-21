@@ -36,15 +36,15 @@ pub mod string;
 pub use self::{
     boolean::{
         BooleanProperty,
-        BooleanPropertyName,
+        BooleanPropertyKey,
     },
     integer::{
         IntegerProperty,
-        IntegerPropertyName,
+        IntegerPropertyKey,
     },
     string::{
         StringProperty,
-        StringPropertyName,
+        StringPropertyKey,
     },
 };
 
@@ -109,31 +109,31 @@ impl From<String> for PropertyName {
 }
 
 /// Types that implement this can represent a set of standard CoreMIDI property
-/// name constants
+/// key constants
 pub trait StandardProperty : Into<CFStringRef> + Copy + Clone { }
 
 /// The name of a MIDI object property, with info about the type of data this
 /// property can be used to access.
 ///
-/// Can either be one of the CoreMIDI-defined property name constants or a
+/// Can either be one of the CoreMIDI-defined property key constants or a
 /// custom property name.
 ///
 /// You should typically not create this directly, since it can be created from
 /// any `&str`, `String`, or [`StandardProperty`](trait.StandardProperty.html) using `std::convert::From` or
 /// `std::convert::Into`.
 #[derive(Clone, Debug)]
-pub enum TypedPropertyName<K> where
+pub enum TypedPropertyKey<K> where
     K: StandardProperty,
 {
     Standard(K),
     Other(CFString),
 }
 
-impl<K> TypedPropertyName<K> where
+impl<K> TypedPropertyKey<K> where
     K: StandardProperty,
 {
     fn custom<S: AsRef<str>>(name: S) -> Self {
-        TypedPropertyName::Other(CFString::new(name.as_ref()))
+        TypedPropertyKey::Other(CFString::new(name.as_ref()))
     }
 
     /// Return a raw CFStringRef pointing to this property key
@@ -141,33 +141,33 @@ impl<K> TypedPropertyName<K> where
     /// Note: Should never be exposed externally
     pub(crate) fn as_string_ref(&self) -> CFStringRef {
         match self {
-            TypedPropertyName::Standard(constant) => Into::into(*constant),
-            TypedPropertyName::Other(custom) => custom.as_concrete_TypeRef(),
+            TypedPropertyKey::Standard(constant) => Into::into(*constant),
+            TypedPropertyKey::Other(custom) => custom.as_concrete_TypeRef(),
         }
     }
 }
 
-impl<K> From<K> for TypedPropertyName<K> where
+impl<K> From<K> for TypedPropertyKey<K> where
     K: StandardProperty,
 {
     fn from(prop: K) -> Self {
-        TypedPropertyName::Standard(prop)
+        TypedPropertyKey::Standard(prop)
     }
 }
 
-impl<K> From<String> for TypedPropertyName<K> where
+impl<K> From<String> for TypedPropertyKey<K> where
     K: StandardProperty,
 {
     fn from(s: String) -> Self {
-        TypedPropertyName::custom(s)
+        TypedPropertyKey::custom(s)
     }
 }
 
-impl<K> From<&str> for TypedPropertyName<K> where
+impl<K> From<&str> for TypedPropertyKey<K> where
     K: StandardProperty,
 {
     fn from(s: &str) -> Self {
-        TypedPropertyName::custom(s)
+        TypedPropertyKey::custom(s)
     }
 }
 

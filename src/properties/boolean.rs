@@ -6,7 +6,7 @@ use coremidi_sys::*;
 use super::{
     match_property_keys,
     StandardProperty,
-    TypedPropertyName,
+    TypedPropertyKey,
 };
 
 /// CoreMIDI-defined constant property names that can be used to access `bool` values
@@ -64,10 +64,10 @@ pub enum BooleanProperty {
     SupportsShowControl,
 }
 
-/// The name of a MIDI object property that is accessed as a `bool`
-pub type BooleanPropertyName = TypedPropertyName<BooleanProperty>;
-
 impl StandardProperty for BooleanProperty { }
+
+/// The name of a MIDI object property that is accessed as a `bool`
+pub type BooleanPropertyKey = TypedPropertyKey<BooleanProperty>;
 
 impl BooleanProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,

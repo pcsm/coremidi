@@ -17,7 +17,7 @@ use {
 use super::{
     match_property_keys,
     StandardProperty,
-    TypedPropertyName,
+    TypedPropertyKey,
 };
 
 /// CoreMIDI-defined constant property names that can be used to access `i32` values
@@ -47,10 +47,10 @@ pub enum IntegerProperty {
     MaxTransmitChannels,
 }
 
-/// The name of a MIDI object property that is accessed as a `i32`
-pub type IntegerPropertyName = TypedPropertyName<IntegerProperty>;
-
 impl StandardProperty for IntegerProperty { }
+
+/// The name of a MIDI object property that is accessed as a `i32`
+pub type IntegerPropertyKey = TypedPropertyKey<IntegerProperty>;
 
 impl IntegerProperty {
     /// Note: Should only be used internally with predefined CoreMidi constants,
@@ -95,10 +95,10 @@ impl From<IntegerProperty> for CFStringRef {
     }
 }
 
-pub(crate) fn int_property_inner(object: &Object, name: CFStringRef) -> Result<i32, OSStatus> {
+pub(crate) fn int_property_inner(object: &Object, key: CFStringRef) -> Result<i32, OSStatus> {
     let mut value = MaybeUninit::uninit();
     let status = unsafe {
-        MIDIObjectGetIntegerProperty(object.0, name, value.as_mut_ptr())
+        MIDIObjectGetIntegerProperty(object.0, key, value.as_mut_ptr())
     };
     result_from_status(status, || {
         let value = unsafe { value.assume_init() };
@@ -106,9 +106,9 @@ pub(crate) fn int_property_inner(object: &Object, name: CFStringRef) -> Result<i
     })
 }
 
-pub(crate) fn set_int_property_inner(object: &Object, name: CFStringRef, value: i32) -> Result<(), OSStatus> {
+pub(crate) fn set_int_property_inner(object: &Object, key: CFStringRef, value: i32) -> Result<(), OSStatus> {
     let status = unsafe {
-        MIDIObjectSetIntegerProperty(object.0, name, value)
+        MIDIObjectSetIntegerProperty(object.0, key, value)
     };
     unit_result_from_status(status)
 }

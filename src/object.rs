@@ -20,10 +20,10 @@ use std::fmt;
 use Object;
 use properties::{
     IntegerProperty,
-    IntegerPropertyName,
-    BooleanPropertyName,
+    IntegerPropertyKey,
+    BooleanPropertyKey,
     StringProperty,
-    StringPropertyName,
+    StringPropertyKey,
     string_property_inner,
     set_string_property_inner,
     int_property_inner,
@@ -82,7 +82,7 @@ impl Object {
 
     /// Sets the value of a string-type property for this object.
     ///
-    /// Property names can be [`StringProperty`](enum.StringProperty.html) 
+    /// Property keys can be [`StringProperty`](enum.StringProperty.html) 
     /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
     /// or `Strings`.
     ///
@@ -93,17 +93,17 @@ impl Object {
     /// client.set_string_property(property::NAME, "Your Name Here").unwrap();
     ///
     /// ```
-    pub fn set_string_property<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
-        N: Into<StringPropertyName>, 
+    pub fn set_string_property<K, V>(&self, key: K, value: V) -> Result<(), OSStatus> where
+        K: Into<StringPropertyKey>, 
         V: AsRef<str>,
     {
-        let name = name.into();
-        set_string_property_inner(self, name.as_string_ref(), value)
+        let key = key.into();
+        set_string_property_inner(self, key.as_string_ref(), value)
     }
 
     /// Gets the value of a string-type property for this object.
     ///
-    /// Property names can be [`StringProperty`](enum.StringProperty.html) 
+    /// Property keys can be [`StringProperty`](enum.StringProperty.html) 
     /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
     /// or `Strings`.
     ///
@@ -114,16 +114,16 @@ impl Object {
     /// let name = client.string_property(property::NAME).unwrap();
     ///
     /// ```
-    pub fn string_property<N>(&self, name: N) -> Result<String, OSStatus> where
-        N: Into<StringPropertyName>, 
+    pub fn string_property<K>(&self, key: K) -> Result<String, OSStatus> where
+        K: Into<StringPropertyKey>, 
     {
-        let name = name.into();
-        string_property_inner(self, name.as_string_ref())
+        let key = key.into();
+        string_property_inner(self, key.as_string_ref())
     }
 
     /// Sets the value of a integer-type property for this object.
     ///
-    /// Property names can be [`IntegerProperty`](enum.IntegerProperty.html) 
+    /// Property keys can be [`IntegerProperty`](enum.IntegerProperty.html) 
     /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
     /// or `Strings`.
     ///
@@ -134,17 +134,17 @@ impl Object {
     /// client.set_int_property(property::MAX_TRANSMIT_CHANNELS, 4).unwrap();
     ///
     /// ```
-    pub fn set_int_property<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
-        N: Into<IntegerPropertyName>, 
+    pub fn set_int_property<K, V>(&self, key: K, value: V) -> Result<(), OSStatus> where
+        K: Into<IntegerPropertyKey>, 
         V: Into<i32>,
     {
-        let name = name.into();
-        set_int_property_inner(self, name.as_string_ref(), value.into())
+        let key = key.into();
+        set_int_property_inner(self, key.as_string_ref(), value.into())
     }
 
     /// Gets the value of a integer-type property for this object.
     ///
-    /// Property names can be [`IntegerProperty`](enum.IntegerProperty.html) 
+    /// Property keys can be [`IntegerProperty`](enum.IntegerProperty.html) 
     /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
     /// or `Strings`.
     ///
@@ -156,16 +156,16 @@ impl Object {
     /// assert!(client.int_property(property::UNIQUE_ID).is_err());
     ///
     /// ```
-    pub fn int_property<N>(&self, name: N) -> Result<i32, OSStatus> where 
-        N: Into<IntegerPropertyName>, 
+    pub fn int_property<K>(&self, key: K) -> Result<i32, OSStatus> where 
+        K: Into<IntegerPropertyKey>, 
     {
-        let name = name.into();
-        int_property_inner(self, name.as_string_ref())
+        let key = key.into();
+        int_property_inner(self, key.as_string_ref())
     }
 
     /// Sets the value of a boolean-type property for this object.
     ///
-    /// Property names can be [`BooleanProperty`](enum.BooleanProperty.html) 
+    /// Property keys can be [`BooleanProperty`](enum.BooleanProperty.html) 
     /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
     /// or `Strings`.
     ///
@@ -178,18 +178,18 @@ impl Object {
     /// client.set_bool_property(property::OFFLINE, true).unwrap();
     ///
     /// ```
-    pub fn set_bool_property<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
-        N: Into<BooleanPropertyName>, 
+    pub fn set_bool_property<K, V>(&self, key: K, value: V) -> Result<(), OSStatus> where
+        K: Into<BooleanPropertyKey>, 
         V: Into<bool>,
     {
-        let name = name.into();
+        let key = key.into();
         let value = if value.into() { 1 } else { 0 };
-        set_int_property_inner(self, name.as_string_ref(), value)
+        set_int_property_inner(self, key.as_string_ref(), value)
     }
 
     /// Gets the value of a boolean-type property for this object.
     ///
-    /// Property names can be [`BooleanProperty`](enum.BooleanProperty.html) 
+    /// Property keys can be [`BooleanProperty`](enum.BooleanProperty.html) 
     /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
     /// or `Strings`.
     ///
@@ -203,11 +203,11 @@ impl Object {
     /// assert!(client.bool_property(property::OFFLINE).is_err());
     ///
     /// ```
-    pub fn bool_property<N>(&self, name: N) -> Result<bool, OSStatus> where
-        N: Into<BooleanPropertyName>, 
+    pub fn bool_property<K>(&self, key: K) -> Result<bool, OSStatus> where
+        K: Into<BooleanPropertyKey>, 
     {
-        let name = name.into();
-        int_property_inner(self, name.as_string_ref()).map(|val| (val == 1))
+        let key = key.into();
+        int_property_inner(self, key.as_string_ref()).map(|val| (val == 1))
     }
 }
 

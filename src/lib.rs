@@ -246,7 +246,7 @@ mod properties;
 mod endpoints;
 mod notifications;
 pub mod property {
-    //! The set of CoreMIDI-defined properties that might be available for MIDI objects.
+    //! The set of CoreMIDI-defined property keys that might be available for MIDI objects.
     //!
     //! Note that [`kMIDIPropertyNameConfiguration`](https://developer.apple.com/reference/coremidi/kMIDIPropertyNameConfiguration)
     //! and [`kMIDIPropertyImage`](https://developer.apple.com/reference/coremidi/kMIDIPropertyImage)
@@ -260,12 +260,12 @@ pub use packets::{PacketListIterator, Packet, PacketBuffer};
 pub use properties::{
     PropertyName,
     BooleanProperty, 
-    BooleanPropertyName,
+    BooleanPropertyKey,
     IntegerProperty,
-    IntegerPropertyName,
+    IntegerPropertyKey,
     StringProperty,
-    StringPropertyName,
-    TypedPropertyName,
+    StringPropertyKey,
+    TypedPropertyKey,
     StandardProperty,
 };
 pub use notifications::{
