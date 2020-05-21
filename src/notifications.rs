@@ -22,7 +22,7 @@ use crate::{
     ObjectType,
 };
 
-/// Information from a `Notfication` about a MIDI object having been added or remvoed
+/// Information from a [`Notification`](enum.Notification.html) about a MIDI object having been added or remvoed
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct AddedRemovedInfo {
@@ -32,7 +32,7 @@ pub struct AddedRemovedInfo {
     pub child_type: ObjectType
 }
 
-/// Information from a `Notfication` about a property that has changed on a MIDI object
+/// Information from a [`Notification`](enum.Notification.html) about a property that has changed on a MIDI object
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct PropertyChangedInfo {
@@ -41,6 +41,7 @@ pub struct PropertyChangedInfo {
     pub property_name: PropertyName,
 }
 
+/// An error that can be returned from a [`Notification`](enum.Notification.html)
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct IOErrorInfo {

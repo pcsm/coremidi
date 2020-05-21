@@ -59,7 +59,11 @@ pub(crate) use self::{
     },
 };
 
-/// Can hold the name of any MIDI object property
+/// The name of a MIDI object property, as returned from a [`Notification`](enum.Notification.html)
+///
+/// If the property name is one of the known CoreMIDI constants, the appropriate
+/// variant will be used based on the type of data that can be accessed through
+/// that property. Otherwise, the name will be in `Other(String)`.
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum PropertyName {
     String(StringProperty),
@@ -115,7 +119,7 @@ pub trait StandardProperty : Into<CFStringRef> + Copy + Clone { }
 /// custom property name.
 ///
 /// You should typically not create this directly, since it can be created from
-/// any `&str`, `String`, or `StandardProperty` using `std::convert::From` or
+/// any `&str`, `String`, or [`StandardProperty`](trait.StandardProperty.html) using `std::convert::From` or
 /// `std::convert::Into`.
 #[derive(Clone, Debug)]
 pub enum TypedPropertyName<K> where

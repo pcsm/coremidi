@@ -30,6 +30,7 @@ use properties::{
     set_integer_property_inner,
 };
 
+/// Represents the type of a MIDI object
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum ObjectType {
     Other,
