@@ -70,8 +70,7 @@ impl StandardProperty for BooleanProperty { }
 pub type BooleanPropertyKey = TypedPropertyKey<BooleanProperty>;
 
 impl BooleanProperty {
-    /// Note: Should only be used internally with predefined CoreMidi constants,
-    /// since it compares pointers of the incoming CFStringRef and the constants
+    /// Note: Should only be used internally with predefined CoreMidi constants.
     pub(crate) fn try_from_constant_string_ref(key: CFStringRef) -> Option<Self> {
         use self::BooleanProperty::*;
         convert_property_key_set! {

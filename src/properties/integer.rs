@@ -53,8 +53,7 @@ impl StandardProperty for IntegerProperty { }
 pub type IntegerPropertyKey = TypedPropertyKey<IntegerProperty>;
 
 impl IntegerProperty {
-    /// Note: Should only be used internally with predefined CoreMidi constants,
-    /// since it compares pointers of the incoming CFStringRef and the constants
+    /// Note: Should only be used internally with predefined CoreMidi constants.
     pub(crate) fn try_from_constant_string_ref(key: CFStringRef) -> Option<Self> {
         use self::IntegerProperty::*;
         convert_property_key_set! {
