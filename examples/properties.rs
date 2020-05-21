@@ -3,9 +3,7 @@ extern crate coremidi;
 use coremidi::{
     Client,
     PacketList,
-    Properties,
-    PropertyGetter,
-    PropertySetter, 
+    property,
 };
 
 fn main() {
@@ -20,10 +18,18 @@ fn main() {
 
     println!("Created Virtual Destination...");
 
-    // How to get a property
-    let name: String = Properties::name().value_from(&destination).unwrap();
-    println!("With Name: {}", name);
+    // Getting a property with a convenience accessor
+    let name = destination.name().unwrap();
+    println!(" - Name: {}", name);
 
-    // How to set a property
-    Properties::private().set_value(&destination, true).unwrap();
+    // Setting and getting a property that doesn't have a convenience accessor
+    destination.set_bool_property(property::PRIVATE, true).unwrap();
+    let private = destination.bool_property(property::PRIVATE).unwrap();
+    println!(" - Private: {}", private);
+
+    // Setting and getting a private property
+    // See https://developer.apple.com/documentation/coremidi/midiobjectref for details on private properties
+    destination.set_string_property("com_coremidi_APrivateProperty", "have a great day!").unwrap();
+    let custom_val = destination.string_property("com_coremidi_APrivateProperty").unwrap();
+    println!(" - Custom Property: {}", custom_val);
 }
