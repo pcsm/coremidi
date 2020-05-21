@@ -82,6 +82,17 @@ impl Object {
 
     /// Sets the value of a string-type property for this object.
     ///
+    /// Property names can be [`StringProperty`](enum.StringProperty.html) 
+    /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
+    /// or `Strings`.
+    ///
+    /// ```
+    /// use coremidi::{ Client, property };
+    /// let client = Client::new("Test Client").unwrap();
+    ///
+    /// client.set_property_string(property::NAME, "Your Name Here").unwrap();
+    ///
+    /// ```
     pub fn set_property_string<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<StringPropertyName>, 
         V: AsRef<str>,
@@ -92,6 +103,17 @@ impl Object {
 
     /// Gets the value of a string-type property for this object.
     ///
+    /// Property names can be [`StringProperty`](enum.StringProperty.html) 
+    /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
+    /// or `Strings`.
+    ///
+    /// ```
+    /// use coremidi::{ Client, property };
+    /// let client = Client::new("Test Client").unwrap();
+    ///
+    /// let name = client.get_property_string(property::NAME).unwrap();
+    ///
+    /// ```
     pub fn get_property_string<N>(&self, name: N) -> Result<String, OSStatus> where
         N: Into<StringPropertyName>, 
     {
@@ -101,6 +123,17 @@ impl Object {
 
     /// Sets the value of a integer-type property for this object.
     ///
+    /// Property names can be [`IntegerProperty`](enum.IntegerProperty.html) 
+    /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
+    /// or `Strings`.
+    ///
+    /// ```
+    /// use coremidi::{ Client, property };
+    /// let client = Client::new("Test Client").unwrap();
+    ///
+    /// client.set_property_integer(property::MAX_TRANSMIT_CHANNELS, 4).unwrap();
+    ///
+    /// ```
     pub fn set_property_integer<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<IntegerPropertyName>, 
         V: Into<i32>,
@@ -111,6 +144,18 @@ impl Object {
 
     /// Gets the value of a integer-type property for this object.
     ///
+    /// Property names can be [`IntegerProperty`](enum.IntegerProperty.html) 
+    /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
+    /// or `Strings`.
+    ///
+    /// ```
+    /// use coremidi::{ Client, property };
+    /// let client = Client::new("Test Client").unwrap();
+    ///
+    /// // Error: No unique id has been set yet
+    /// assert!(client.get_property_integer(property::UNIQUE_ID).is_err());
+    ///
+    /// ```
     pub fn get_property_integer<N>(&self, name: N) -> Result<i32, OSStatus> where 
         N: Into<IntegerPropertyName>, 
     {
@@ -120,8 +165,19 @@ impl Object {
 
     /// Sets the value of a boolean-type property for this object.
     ///
-    /// CoreMIDI treats booleans as integers (`0`/`1`) but this crate uses Rust `bool`s
+    /// Property names can be [`BooleanProperty`](enum.BooleanProperty.html) 
+    /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
+    /// or `Strings`.
     ///
+    /// CoreMIDI treats booleans as integers (`0`/`1`), but this crate uses `bool`.
+    ///
+    /// ```
+    /// use coremidi::{ Client, property };
+    /// let client = Client::new("Test Client").unwrap();
+    ///
+    /// client.set_property_boolean(property::OFFLINE, true).unwrap();
+    ///
+    /// ```
     pub fn set_property_boolean<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<BooleanPropertyName>, 
         V: Into<bool>,
@@ -133,8 +189,20 @@ impl Object {
 
     /// Gets the value of a boolean-type property for this object.
     ///
-    /// CoreMIDI treats booleans as integers (`0`/`1`) but this crate uses Rust `bool`s
+    /// Property names can be [`BooleanProperty`](enum.BooleanProperty.html) 
+    /// variants, [`coremidi::property`](property/index.html) constants, `&str`s, 
+    /// or `Strings`.
     ///
+    /// CoreMIDI treats booleans as integers (`0`/`1`), but this crate uses `bool`.
+    ///
+    /// ```
+    /// use coremidi::{ Client, property };
+    /// let client = Client::new("Test Client").unwrap();
+    ///
+    /// // Error: No offline property has been set yet
+    /// assert!(client.get_property_boolean(property::OFFLINE).is_err());
+    ///
+    /// ```
     pub fn get_property_boolean<N>(&self, name: N) -> Result<bool, OSStatus> where
         N: Into<BooleanPropertyName>, 
     {
