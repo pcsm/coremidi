@@ -49,8 +49,7 @@ impl StandardProperty for StringProperty { }
 pub type StringPropertyKey = TypedPropertyKey<StringProperty>;
 
 impl StringProperty {
-    /// Note: Should only be used internally with predefined CoreMidi constants,
-    /// since it compares pointers of the incoming CFStringRef and the constants
+    /// Note: Should only be used internally with predefined CoreMidi constants.
     pub(crate) fn try_from_constant_string_ref(key: CFStringRef) -> Option<Self> {
         use self::StringProperty::*;
         convert_property_key_set! {
