@@ -65,7 +65,7 @@ pub enum PropertyName {
     String(StringProperty),
     Integer(IntegerProperty),
     Boolean(BooleanProperty),
-    Custom(String),
+    Other(String),
 }
 
 impl From<CFStringRef> for PropertyName {
@@ -100,7 +100,7 @@ impl From<BooleanProperty> for PropertyName {
 
 impl From<String> for PropertyName {
     fn from(string: String) -> Self {
-        PropertyName::Custom(string)
+        PropertyName::Other(string)
     }
 }
 
@@ -122,14 +122,14 @@ pub enum TypedPropertyName<K> where
     K: StandardProperty,
 {
     Standard(K),
-    Custom(CFString),
+    Other(CFString),
 }
 
 impl<K> TypedPropertyName<K> where
     K: StandardProperty,
 {
     fn custom<S: AsRef<str>>(name: S) -> Self {
-        TypedPropertyName::Custom(CFString::new(name.as_ref()))
+        TypedPropertyName::Other(CFString::new(name.as_ref()))
     }
 
     /// Return a raw CFStringRef pointing to this property key
@@ -138,7 +138,7 @@ impl<K> TypedPropertyName<K> where
     pub(crate) fn as_string_ref(&self) -> CFStringRef {
         match self {
             TypedPropertyName::Standard(constant) => Into::into(*constant),
-            TypedPropertyName::Custom(custom) => custom.as_concrete_TypeRef(),
+            TypedPropertyName::Other(custom) => custom.as_concrete_TypeRef(),
         }
     }
 }
@@ -164,5 +164,51 @@ impl<K> From<&str> for TypedPropertyName<K> where
 {
     fn from(s: &str) -> Self {
         TypedPropertyName::custom(s)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use coremidi_sys::kMIDIPropertyUniqueID;
+    use crate::Client;
+
+    // Note: Until a Client is started, Property constants won't have the
+    // correct string value, since CoreMIDI initializes them when a client
+    // is created
+    fn setup() -> Client {
+        Client::new("Test Client").unwrap()
+    }
+
+    #[test]
+    fn test_property_from_constant() {
+        let _client = setup();
+
+        let property = PropertyName::from(unsafe { kMIDIPropertyUniqueID });
+
+        assert_eq!(property, PropertyName::Integer(IntegerProperty::UniqueId))
+    }
+
+    #[test]
+    fn test_property_from_known_string() {
+        let _client = setup();
+
+        // Known to be the value of kMIDIPropertyOffline
+        let name = CFString::new("offline");
+        let property = PropertyName::from(name.as_concrete_TypeRef());
+
+        assert_eq!(property, PropertyName::Boolean(BooleanProperty::Offline))
+    }
+
+    #[test]
+    fn test_property_from_unknown_string() {
+        let _client = setup();
+
+        const PROPERTY_STR: &str = "nOt_A_rEaL_cOrEmIdI_pRoPerTy";
+        let name = CFString::new(PROPERTY_STR);
+        let property = PropertyName::from(name.as_concrete_TypeRef());
+
+        assert_eq!(property, PropertyName::Other(PROPERTY_STR.to_string()))
     }
 }
