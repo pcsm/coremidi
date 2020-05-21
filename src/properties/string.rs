@@ -81,7 +81,7 @@ impl From<StringProperty> for CFStringRef {
     }
 }
 
-pub(crate) fn get_string_property_inner(object: &Object, name: CFStringRef) -> Result<String, OSStatus> {
+pub(crate) fn string_property_inner(object: &Object, name: CFStringRef) -> Result<String, OSStatus> {
     let mut string_ref = MaybeUninit::uninit();
     let status = unsafe {
         MIDIObjectGetStringProperty(object.0, name, string_ref.as_mut_ptr())
@@ -126,15 +126,15 @@ mod tests {
 
     // Test getting the original value of the "name" property
     fn check_get_original(property: StringProperty, dest: &VirtualDestination) {
-        let name = dest.get_property_string(property).unwrap();
+        let name = dest.string_property(property).unwrap();
 
         assert_eq!(name, NAME_ORIG);
     }
 
     // Test setting then getting the "name" property
     fn check_roundtrip(property: StringProperty, dest: &VirtualDestination) {
-        dest.set_property_string(property, NAME_MODIFIED).unwrap();
-        let name = dest.get_property_string(property).unwrap();
+        dest.set_string_property(property, NAME_MODIFIED).unwrap();
+        let name = dest.string_property(property).unwrap();
 
         assert_eq!(name, NAME_MODIFIED);
     }

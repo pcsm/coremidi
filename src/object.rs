@@ -24,10 +24,10 @@ use properties::{
     BooleanPropertyName,
     StringProperty,
     StringPropertyName,
-    get_string_property_inner,
+    string_property_inner,
     set_string_property_inner,
-    get_integer_property_inner,
-    set_integer_property_inner,
+    int_property_inner,
+    set_int_property_inner,
 };
 
 /// Represents the type of a MIDI object
@@ -65,19 +65,19 @@ impl Object {
     /// Get the name of this object.
     ///
     pub fn name(&self) -> Option<String> {
-        self.get_property_string(StringProperty::Name).ok()
+        self.string_property(StringProperty::Name).ok()
     }
 
     /// Get the unique id of this object.
     ///
     pub fn unique_id(&self) -> Option<u32> {
-        self.get_property_integer(IntegerProperty::UniqueId).ok().map(|v: SInt32| v as u32)
+        self.int_property(IntegerProperty::UniqueId).ok().map(|v: SInt32| v as u32)
     }
 
     /// Get the display name of this object.
     ///
     pub fn display_name(&self) -> Option<String> {
-        self.get_property_string(StringProperty::DisplayName).ok()
+        self.string_property(StringProperty::DisplayName).ok()
     }
 
     /// Sets the value of a string-type property for this object.
@@ -90,10 +90,10 @@ impl Object {
     /// use coremidi::{ Client, property };
     /// let client = Client::new("Test Client").unwrap();
     ///
-    /// client.set_property_string(property::NAME, "Your Name Here").unwrap();
+    /// client.set_string_property(property::NAME, "Your Name Here").unwrap();
     ///
     /// ```
-    pub fn set_property_string<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
+    pub fn set_string_property<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<StringPropertyName>, 
         V: AsRef<str>,
     {
@@ -111,14 +111,14 @@ impl Object {
     /// use coremidi::{ Client, property };
     /// let client = Client::new("Test Client").unwrap();
     ///
-    /// let name = client.get_property_string(property::NAME).unwrap();
+    /// let name = client.string_property(property::NAME).unwrap();
     ///
     /// ```
-    pub fn get_property_string<N>(&self, name: N) -> Result<String, OSStatus> where
+    pub fn string_property<N>(&self, name: N) -> Result<String, OSStatus> where
         N: Into<StringPropertyName>, 
     {
         let name = name.into();
-        get_string_property_inner(self, name.as_string_ref())
+        string_property_inner(self, name.as_string_ref())
     }
 
     /// Sets the value of a integer-type property for this object.
@@ -131,15 +131,15 @@ impl Object {
     /// use coremidi::{ Client, property };
     /// let client = Client::new("Test Client").unwrap();
     ///
-    /// client.set_property_integer(property::MAX_TRANSMIT_CHANNELS, 4).unwrap();
+    /// client.set_int_property(property::MAX_TRANSMIT_CHANNELS, 4).unwrap();
     ///
     /// ```
-    pub fn set_property_integer<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
+    pub fn set_int_property<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<IntegerPropertyName>, 
         V: Into<i32>,
     {
         let name = name.into();
-        set_integer_property_inner(self, name.as_string_ref(), value.into())
+        set_int_property_inner(self, name.as_string_ref(), value.into())
     }
 
     /// Gets the value of a integer-type property for this object.
@@ -153,14 +153,14 @@ impl Object {
     /// let client = Client::new("Test Client").unwrap();
     ///
     /// // Error: No unique id has been set yet
-    /// assert!(client.get_property_integer(property::UNIQUE_ID).is_err());
+    /// assert!(client.int_property(property::UNIQUE_ID).is_err());
     ///
     /// ```
-    pub fn get_property_integer<N>(&self, name: N) -> Result<i32, OSStatus> where 
+    pub fn int_property<N>(&self, name: N) -> Result<i32, OSStatus> where 
         N: Into<IntegerPropertyName>, 
     {
         let name = name.into();
-        get_integer_property_inner(self, name.as_string_ref())
+        int_property_inner(self, name.as_string_ref())
     }
 
     /// Sets the value of a boolean-type property for this object.
@@ -175,16 +175,16 @@ impl Object {
     /// use coremidi::{ Client, property };
     /// let client = Client::new("Test Client").unwrap();
     ///
-    /// client.set_property_boolean(property::OFFLINE, true).unwrap();
+    /// client.set_bool_property(property::OFFLINE, true).unwrap();
     ///
     /// ```
-    pub fn set_property_boolean<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
+    pub fn set_bool_property<N, V>(&self, name: N, value: V) -> Result<(), OSStatus> where
         N: Into<BooleanPropertyName>, 
         V: Into<bool>,
     {
         let name = name.into();
         let value = if value.into() { 1 } else { 0 };
-        set_integer_property_inner(self, name.as_string_ref(), value)
+        set_int_property_inner(self, name.as_string_ref(), value)
     }
 
     /// Gets the value of a boolean-type property for this object.
@@ -200,14 +200,14 @@ impl Object {
     /// let client = Client::new("Test Client").unwrap();
     ///
     /// // Error: No offline property has been set yet
-    /// assert!(client.get_property_boolean(property::OFFLINE).is_err());
+    /// assert!(client.bool_property(property::OFFLINE).is_err());
     ///
     /// ```
-    pub fn get_property_boolean<N>(&self, name: N) -> Result<bool, OSStatus> where
+    pub fn bool_property<N>(&self, name: N) -> Result<bool, OSStatus> where
         N: Into<BooleanPropertyName>, 
     {
         let name = name.into();
-        get_integer_property_inner(self, name.as_string_ref()).map(|val| (val == 1))
+        int_property_inner(self, name.as_string_ref()).map(|val| (val == 1))
     }
 }
 
@@ -248,14 +248,14 @@ mod tests {
 
     // Test getting the original value of the property
     fn check_get_original(name: &str, dest: &VirtualDestination) {
-        let name: String = dest.get_property_string(name).unwrap();
+        let name: String = dest.string_property(name).unwrap();
 
         assert_eq!(name, NAME_ORIG);
     }
 
     fn check_roundtrip(name: &str, dest: &VirtualDestination) {
-        dest.set_property_string(name, NAME_MODIFIED).unwrap();
-        let name: String = dest.get_property_string(name).unwrap();
+        dest.set_string_property(name, NAME_MODIFIED).unwrap();
+        let name: String = dest.string_property(name).unwrap();
 
         assert_eq!(name, NAME_MODIFIED);
     }

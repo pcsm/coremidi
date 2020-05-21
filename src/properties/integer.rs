@@ -95,7 +95,7 @@ impl From<IntegerProperty> for CFStringRef {
     }
 }
 
-pub(crate) fn get_integer_property_inner(object: &Object, name: CFStringRef) -> Result<i32, OSStatus> {
+pub(crate) fn int_property_inner(object: &Object, name: CFStringRef) -> Result<i32, OSStatus> {
     let mut value = MaybeUninit::uninit();
     let status = unsafe {
         MIDIObjectGetIntegerProperty(object.0, name, value.as_mut_ptr())
@@ -106,7 +106,7 @@ pub(crate) fn get_integer_property_inner(object: &Object, name: CFStringRef) -> 
     })
 }
 
-pub(crate) fn set_integer_property_inner(object: &Object, name: CFStringRef, value: i32) -> Result<(), OSStatus> {
+pub(crate) fn set_int_property_inner(object: &Object, name: CFStringRef, value: i32) -> Result<(), OSStatus> {
     let status = unsafe {
         MIDIObjectSetIntegerProperty(object.0, name, value)
     };
@@ -135,7 +135,7 @@ mod tests {
         // Is not set by default for Virtual Destinations
         let property = property::ADVANCED_SCHEDULE_TIME_MUSEC;
 
-        let value  = dest.get_property_integer(property);
+        let value  = dest.int_property(property);
 
         assert!(value.is_err())
     }
@@ -145,8 +145,8 @@ mod tests {
         let (_client, dest) = setup();
         let property = property::ADVANCED_SCHEDULE_TIME_MUSEC;
 
-        dest.set_property_integer(property, ADVANCED_SCHEDULE_TIME).unwrap();
-        let num = dest.get_property_integer(property).unwrap();
+        dest.set_int_property(property, ADVANCED_SCHEDULE_TIME).unwrap();
+        let num = dest.int_property(property).unwrap();
 
         assert_eq!(num, ADVANCED_SCHEDULE_TIME);
     }

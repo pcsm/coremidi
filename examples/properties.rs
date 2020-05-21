@@ -23,13 +23,13 @@ fn main() {
     println!(" - Name: {}", name);
 
     // Setting and getting a property that doesn't have a convenience accessor
-    destination.set_property_boolean(property::PRIVATE, true).unwrap();
-    let private = destination.get_property_boolean(property::PRIVATE).unwrap();
+    destination.set_bool_property(property::PRIVATE, true).unwrap();
+    let private = destination.bool_property(property::PRIVATE).unwrap();
     println!(" - Private: {}", private);
 
     // Setting and getting a private property
     // See https://developer.apple.com/documentation/coremidi/midiobjectref for details on private properties
-    destination.set_property_string("com_coremidi_APrivateProperty", "have a great day!").unwrap();
-    let custom_val = destination.get_property_string("com_coremidi_APrivateProperty").unwrap();
+    destination.set_string_property("com_coremidi_APrivateProperty", "have a great day!").unwrap();
+    let custom_val = destination.string_property("com_coremidi_APrivateProperty").unwrap();
     println!(" - Custom Property: {}", custom_val);
 }

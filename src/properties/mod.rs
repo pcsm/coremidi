@@ -50,11 +50,11 @@ pub use self::{
 
 pub(crate) use self::{
     integer::{
-        get_integer_property_inner,
-        set_integer_property_inner,
+        int_property_inner,
+        set_int_property_inner,
     },
     string::{
-        get_string_property_inner,
+        string_property_inner,
         set_string_property_inner,
     },
 };

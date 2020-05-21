@@ -160,7 +160,7 @@ mod tests {
         // Not set by default on Virtual Destinations
         let property = property::TRANSMITS_PROGRAM_CHANGES;
 
-        let value = dest.get_property_boolean(property);
+        let value = dest.bool_property(property);
 
         assert!(value.is_err())
     }
@@ -170,8 +170,8 @@ mod tests {
         let (_client, dest) = setup();
         let property = property::PRIVATE;
         
-        dest.set_property_boolean(property, true).unwrap();
-        let value = dest.get_property_boolean(property).unwrap();
+        dest.set_bool_property(property, true).unwrap();
+        let value = dest.bool_property(property).unwrap();
 
         assert!(value, true)
     }
