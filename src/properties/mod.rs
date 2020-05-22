@@ -62,6 +62,71 @@ pub(crate) use self::{
     },
 };
 
+/// Types that implement this can represent a set of standard CoreMIDI property
+/// key constants.
+pub trait StandardProperty : Into<CFStringRef> + Into<PropertyName> + Copy + Clone { }
+
+/// The name of a MIDI object property that can be used to access one specific
+/// type of data.
+///
+/// This type only exists to enable easy conversions for the arguments to
+/// [`Object`](struct.Object.html)'s getter and setter methods. Can either
+/// be one of the CoreMIDI-defined property key constants or a custom property
+/// name.
+///
+/// You should not create this type directly, since it can be created from any
+/// `&str`, `String`, or [`StandardProperty`](trait.StandardProperty.html) using `std::convert::From` or
+/// `std::convert::Into`.
+#[derive(Clone, Debug)]
+pub enum TypedPropertyKey<K> where
+    K: StandardProperty,
+{
+    Standard(K),
+    Other(CFString),
+}
+
+impl<K> TypedPropertyKey<K> where
+    K: StandardProperty,
+{
+    fn custom<S: AsRef<str>>(name: S) -> Self {
+        TypedPropertyKey::Other(CFString::new(name.as_ref()))
+    }
+
+    /// Return a raw CFStringRef pointing to this property key
+    ///
+    /// Note: Should never be exposed externally
+    pub(crate) fn as_string_ref(&self) -> CFStringRef {
+        match self {
+            TypedPropertyKey::Standard(constant) => Into::into(*constant),
+            TypedPropertyKey::Other(custom) => custom.as_concrete_TypeRef(),
+        }
+    }
+}
+
+impl<K> From<K> for TypedPropertyKey<K> where
+    K: StandardProperty,
+{
+    fn from(prop: K) -> Self {
+        TypedPropertyKey::Standard(prop)
+    }
+}
+
+impl<K> From<String> for TypedPropertyKey<K> where
+    K: StandardProperty,
+{
+    fn from(s: String) -> Self {
+        TypedPropertyKey::custom(s)
+    }
+}
+
+impl<K> From<&str> for TypedPropertyKey<K> where
+    K: StandardProperty,
+{
+    fn from(s: &str) -> Self {
+        TypedPropertyKey::custom(s)
+    }
+}
+
 /// The name of a MIDI object property, as returned from a [`Notification`](enum.Notification.html).
 ///
 /// When matching the value against standard CoreMIDI properties, `==` can be
@@ -258,71 +323,6 @@ impl From<BooleanProperty> for ParsedPropertyName {
 impl From<String> for ParsedPropertyName {
     fn from(string: String) -> Self {
         ParsedPropertyName::Other(string)
-    }
-}
-
-/// Types that implement this can represent a set of standard CoreMIDI property
-/// key constants.
-pub trait StandardProperty : Into<CFStringRef> + Into<PropertyName> + Copy + Clone { }
-
-/// The name of a MIDI object property that can be used to access one specific
-/// type of data.
-///
-/// This type only exists to enable easy conversions for the arguments to
-/// [`Object`](struct.Object.html)'s getter and setter methods. Can either
-/// be one of the CoreMIDI-defined property key constants or a custom property
-/// name.
-///
-/// You should not create this type directly, since it can be created from any
-/// `&str`, `String`, or [`StandardProperty`](trait.StandardProperty.html) using `std::convert::From` or
-/// `std::convert::Into`.
-#[derive(Clone, Debug)]
-pub enum TypedPropertyKey<K> where
-    K: StandardProperty,
-{
-    Standard(K),
-    Other(CFString),
-}
-
-impl<K> TypedPropertyKey<K> where
-    K: StandardProperty,
-{
-    fn custom<S: AsRef<str>>(name: S) -> Self {
-        TypedPropertyKey::Other(CFString::new(name.as_ref()))
-    }
-
-    /// Return a raw CFStringRef pointing to this property key
-    ///
-    /// Note: Should never be exposed externally
-    pub(crate) fn as_string_ref(&self) -> CFStringRef {
-        match self {
-            TypedPropertyKey::Standard(constant) => Into::into(*constant),
-            TypedPropertyKey::Other(custom) => custom.as_concrete_TypeRef(),
-        }
-    }
-}
-
-impl<K> From<K> for TypedPropertyKey<K> where
-    K: StandardProperty,
-{
-    fn from(prop: K) -> Self {
-        TypedPropertyKey::Standard(prop)
-    }
-}
-
-impl<K> From<String> for TypedPropertyKey<K> where
-    K: StandardProperty,
-{
-    fn from(s: String) -> Self {
-        TypedPropertyKey::custom(s)
-    }
-}
-
-impl<K> From<&str> for TypedPropertyKey<K> where
-    K: StandardProperty,
-{
-    fn from(s: &str) -> Self {
-        TypedPropertyKey::custom(s)
     }
 }
 
