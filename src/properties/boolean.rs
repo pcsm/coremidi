@@ -9,7 +9,7 @@ use super::{
     TypedPropertyKey,
 };
 
-/// CoreMIDI-defined constant property names that can be used to access `bool` values
+/// CoreMIDI-defined constant property names that can be used to access `bool` values.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum BooleanProperty {
     /// See [kMIDIPropertyIsEmbeddedEntity](https://developer.apple.com/reference/coremidi/kMIDIPropertyIsEmbeddedEntity)
@@ -66,7 +66,10 @@ pub enum BooleanProperty {
 
 impl StandardProperty for BooleanProperty { }
 
-/// The name of a MIDI object property that is accessed as a `bool`
+/// The name of a MIDI object property that is accessed as a `bool`.
+///
+/// This type only exists to enable easy conversions for the arguments to
+/// [`Object`](struct.Object.html)'s getter and setter methods.
 pub type BooleanPropertyKey = TypedPropertyKey<BooleanProperty>;
 
 impl BooleanProperty {

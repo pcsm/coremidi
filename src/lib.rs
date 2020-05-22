@@ -258,6 +258,7 @@ pub use endpoints::sources::Sources;
 pub use packets::{PacketListIterator, Packet, PacketBuffer};
 pub use properties::{
     PropertyName,
+    ParsedPropertyName,
     BooleanProperty, 
     BooleanPropertyKey,
     IntegerProperty,
