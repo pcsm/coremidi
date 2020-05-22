@@ -26,7 +26,7 @@ use super::{
     TypedPropertyKey,
 };
 
-/// CoreMIDI-defined constant property names that can be used to access `String` values
+/// CoreMIDI-defined constant property names that can be used to access `String` values.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum StringProperty {
     /// See [kMIDIPropertyName](https://developer.apple.com/reference/coremidi/kmidipropertyname)
@@ -45,7 +45,10 @@ pub enum StringProperty {
 
 impl StandardProperty for StringProperty { }
 
-/// The name of a MIDI object property that is accessed as a `String`
+/// The name of a MIDI object property that is accessed as a `String`.
+///
+/// This type only exists to enable easy conversions for the arguments to
+/// [`Object`](struct.Object.html)'s getter and setter methods.
 pub type StringPropertyKey = TypedPropertyKey<StringProperty>;
 
 impl StringProperty {

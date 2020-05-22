@@ -20,7 +20,7 @@ use super::{
     TypedPropertyKey,
 };
 
-/// CoreMIDI-defined constant property names that can be used to access `i32` values
+/// CoreMIDI-defined constant property names that can be used to access `i32` values.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum IntegerProperty {
     /// See [kMIDIPropertyDeviceID](https://developer.apple.com/reference/coremidi/kmidipropertydeviceid)
@@ -49,7 +49,10 @@ pub enum IntegerProperty {
 
 impl StandardProperty for IntegerProperty { }
 
-/// The name of a MIDI object property that is accessed as a `i32`
+/// The name of a MIDI object property that is accessed as a `i32`.
+///
+/// This type only exists to enable easy conversions for the arguments to
+/// [`Object`](struct.Object.html)'s getter and setter methods.
 pub type IntegerPropertyKey = TypedPropertyKey<IntegerProperty>;
 
 impl IntegerProperty {
