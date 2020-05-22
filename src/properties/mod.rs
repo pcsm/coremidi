@@ -242,6 +242,24 @@ impl PartialEq<BooleanProperty> for PropertyName {
     }
 }
 
+impl PartialEq<PropertyName> for StringProperty {
+    fn eq(&self, other: &PropertyName) -> bool {
+        other.matches(*self)
+    }
+}
+
+impl PartialEq<PropertyName> for IntegerProperty {
+    fn eq(&self, other: &PropertyName) -> bool {
+        other.matches(*self)
+    }
+}
+
+impl PartialEq<PropertyName> for BooleanProperty {
+    fn eq(&self, other: &PropertyName) -> bool {
+        other.matches(*self)
+    }
+}
+
 impl<'a> From<&'a str> for PropertyName {
     fn from(string: &str) -> Self {
         PropertyName(CFString::new(string))
